@@ -3,7 +3,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGameStore } from "./store";
 import UnitBlock from "./components/UnitBlock";
-import { baseWidth, baseHeight, baseSize, acceptedKeys, idleInput } from "./constants";
+import {
+  baseWidth,
+  baseHeight,
+  baseSize,
+  acceptedKeys,
+  idleInput,
+} from "./constants";
 
 function Page() {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -12,6 +18,7 @@ function Page() {
   const status = useGameStore((state) => state.status);
   const input = useGameStore((state) => state.input);
   const current = useGameStore((state) => state.current);
+  const score = useGameStore((state) => state.score);
 
   const [gridWidth, setGridWidth] = useState(baseWidth);
   const [gridHeight, setGridHeight] = useState(baseHeight);
@@ -60,9 +67,15 @@ function Page() {
 
   return (
     <div className="h-[100%] flex justify-center items-center">
-      <h3 className="absolute top-2">
-        {ready && (status === "idle" ? "Press ENTER to start" : status)}
-      </h3>
+      {ready && (
+        <>
+          <h3 className="absolute top-2">
+            {status === "idle" ? "Press ENTER to start" : status}
+          </h3>
+          <h3 className="absolute top-2 left-2">Score: {score}</h3>
+        </>
+      )}
+
       <div
         ref={gridRef}
         className="w-[40vh] h-[80vh] flex justify-center items-center"

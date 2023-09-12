@@ -2,7 +2,7 @@ import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { useStore, StateCreator } from "zustand";
 import { KeyboardInput } from "./types";
-import { COLS, ROWS } from "./constants";
+import { COLS, ROWS, scorePerRow } from "./constants";
 
 export interface State {
   status: "idle" | "started" | "paused" | "gameover";
@@ -160,7 +160,7 @@ const store: StateCreator<State & Actions> = (set, get) => {
             const removedGrid = removeRows(fullRows, state.grid);
             const newGrid = moveRowsToBottom(removedGrid);
 
-            return { grid: newGrid };
+            return { grid: newGrid, score: state.score + scorePerRow * fullRows.length };
           });
         }
 

@@ -15,3 +15,5 @@ export const idleInput: KeyboardInput = {
 };
 
 export const acceptedKeys = ["ArrowDown", "ArrowLeft", "ArrowRight", "Enter"];
+
+export const scorePerRow = 100;
