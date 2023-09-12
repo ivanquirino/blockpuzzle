@@ -1,21 +1,9 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { KeyboardInput } from "./types";
 import { useGameStore } from "./store";
 import UnitBlock from "./components/UnitBlock";
-import { ROWS, COLS } from "./constants";
-
-const baseSize = 4;
-const baseWidth = baseSize * COLS;
-const baseHeight = baseSize * ROWS;
-
-const idleInput: KeyboardInput = {
-  left: false,
-  right: false,
-  down: false,
-  enter: false,
-};
+import { baseWidth, baseHeight, baseSize, acceptedKeys, idleInput } from "./constants";
 
 function Page() {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -32,8 +20,6 @@ function Page() {
 
   useEffect(() => {
     const keyboardHandler = (event: KeyboardEvent) => {
-      const acceptedKeys = ["ArrowDown", "ArrowLeft", "ArrowRight", "Enter"];
-
       if (!acceptedKeys.includes(event.key)) {
         return;
       }
@@ -86,7 +72,6 @@ function Page() {
             style={{
               width: gridWidth,
               height: gridHeight,
-              visibility: "visible",
             }}
             className="border-[1px] border-white relative box-content"
           >

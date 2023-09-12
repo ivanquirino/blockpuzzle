@@ -123,8 +123,7 @@ const store: StateCreator<State & Actions> = (set, get) => {
     },
 
     start: () => {
-      set({ status: "started" });
-      set((state) => state);
+      set({ status: "started" });      
 
       spawn();
 
