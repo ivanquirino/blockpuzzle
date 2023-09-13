@@ -19,6 +19,7 @@ function Page() {
   const input = useGameStore((state) => state.input);
   const current = useGameStore((state) => state.current);
   const score = useGameStore((state) => state.score);
+  const currentPieceId = useGameStore((state) => state.currentPieceId);
 
   const [gridWidth, setGridWidth] = useState(baseWidth);
   const [gridHeight, setGridHeight] = useState(baseHeight);
@@ -88,25 +89,35 @@ function Page() {
             }}
             className="border-[1px] border-white relative box-content"
           >
-            {current && (
-              <UnitBlock
-                x={current.x * blockSize}
-                y={current.y * blockSize}
-                size={blockSize}
-              />
-            )}
-            {grid.map((row, y) =>
-              row.map(
-                (col, x) =>
-                  col && (
+            {current &&
+              currentPieceId &&
+              current.map(
+                ({ x, y }) =>
+                  y > 1 && (
                     <UnitBlock
-                      key={`${y}${x}`}
+                      key={`${x}-${y}`}
                       x={x * blockSize}
-                      y={y * blockSize}
+                      y={(y - 2) * blockSize}
                       size={blockSize}
+                      color={currentPieceId}
                     />
                   )
-              )
+              )}
+            {grid.map(
+              (row, y) =>
+                y > 1 &&
+                row.map(
+                  (col, x) =>
+                    col && (
+                      <UnitBlock
+                        key={`${y}${x}`}
+                        x={x * blockSize}
+                        y={(y - 2) * blockSize}
+                        size={blockSize}
+                        color={col}
+                      />
+                    )
+                )
             )}
           </div>
         )}

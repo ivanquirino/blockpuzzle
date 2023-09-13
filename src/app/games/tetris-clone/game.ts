@@ -1,17 +1,76 @@
 import { State } from "./store";
 import { scorePerRow, ROWS, COLS } from "./constants";
-import { KeyboardInput } from "./types";
+import { KeyboardInput, CurrentPiece, Grid } from "./types";
+
+const pieceO = [
+  { x: 4, y: 0 },
+  { x: 5, y: 0 },
+  { x: 4, y: 1 },
+  { x: 5, y: 1 },
+];
+
+const pieceI = [
+  { x: 3, y: 1 },
+  { x: 4, y: 1 },
+  { x: 5, y: 1 },
+  { x: 6, y: 1 },
+];
+
+const pieceT = [
+  { x: 4, y: 0 },
+  { x: 3, y: 1 },
+  { x: 4, y: 1 },
+  { x: 5, y: 1 },
+];
+
+const pieceZ = [
+  { x: 3, y: 0 },
+  { x: 4, y: 0 },
+  { x: 4, y: 1 },
+  { x: 5, y: 1 },
+];
+
+const pieceS = [
+  { x: 4, y: 0 },
+  { x: 5, y: 0 },
+  { x: 3, y: 1 },
+  { x: 4, y: 1 },
+];
+
+const pieceL = [
+  { x: 5, y: 0 },
+  { x: 3, y: 1 },
+  { x: 4, y: 1 },
+  { x: 5, y: 1 },
+];
+
+const pieceJ = [
+  { x: 3, y: 0 },
+  { x: 3, y: 1 },
+  { x: 4, y: 1 },
+  { x: 5, y: 1 },
+];
+
+const pieces = [pieceO, pieceI, pieceT, pieceZ, pieceS, pieceL, pieceJ];
+
+const getRandomPieceIndex = () => {
+  return Math.round(Math.random() * (pieces.length - 1));
+};
 
 /**
  * Spawns the current piece
- * @param state 
+ * @param state
  * @returns updated state
  */
 export function spawn(state: State) {
-  return state.current === null ? { current: { x: 4, y: 0 } } : state;
+  const index = getRandomPieceIndex();
+
+  return state.current === null
+    ? { current: pieces[index], currentPieceId: index + 1 }
+    : state;
 }
 
-const getGridCell = (row: number, col: number, grid: State["grid"]) => {
+const getGridCell = (row: number, col: number, grid: Grid) => {
   if (grid[row] && grid[row][col]) {
     return grid[row][col];
   }
@@ -19,9 +78,57 @@ const getGridCell = (row: number, col: number, grid: State["grid"]) => {
   return null;
 };
 
+const moveDown = (piece: CurrentPiece) => {
+  return piece.map((pos) => {
+    const y = pos.y + 1;
+    return { ...pos, y };
+  });
+};
+
+const isPieceBlocked = (piece: CurrentPiece, grid: Grid) => {
+  return piece.some((pos) => getGridCell(pos.y, pos.x, grid));
+};
+
+const getMaxY = (piece: CurrentPiece) => {
+  return piece.reduce((max, pos) => {
+    if (pos.y > max) return pos.y;
+    return max;
+  }, piece[0].y);
+};
+
+const moveLeft = (current: CurrentPiece) => {
+  return current.map((pos) => {
+    const x = pos.x - 1;
+    return { ...pos, x };
+  });
+};
+
+const moveRight = (current: CurrentPiece) => {
+  return current.map((pos) => {
+    const x = pos.x + 1;
+    return { ...pos, x };
+  });
+};
+
+const getMinX = (piece: CurrentPiece) => {
+  return piece.reduce((min, pos) => {
+    if (pos.x < min) return pos.x;
+    return min;
+  }, piece[0].x);
+};
+
+const getMaxX = (piece: CurrentPiece) => {
+  return piece.reduce((max, pos) => {
+    if (pos.x > max) return pos.x;
+    return max;
+  }, piece[0].x);
+};
+
+const rotateClockwise = (piece: CurrentPiece) => {};
+
 /**
  * Place the current block on the grid, removing the current piece
- * @param state 
+ * @param state
  * @returns updated state
  */
 export function placeCurrentBlock(state: State) {
@@ -29,12 +136,15 @@ export function placeCurrentBlock(state: State) {
   const grid = state.grid;
 
   if (current) {
-    if (getGridCell(current.y + 1, current.x, grid) || current.y === 19) {
+    const next = moveDown(current);
+
+    if (isPieceBlocked(next, state.grid) || getMaxY(current) === ROWS - 1) {
       const newGrid = [...grid];
 
-      newGrid[current.y] = [...grid[current.y]];
-
-      newGrid[current.y][current.x] = 1;
+      current.forEach((pos) => {
+        newGrid[pos.y] = [...newGrid[pos.y]];
+        newGrid[pos.y][pos.x] = state.currentPieceId;
+      });
 
       return { grid: newGrid, current: null };
     }
@@ -63,7 +173,7 @@ export const createGrid = () => {
   return grid as (null | number)[][];
 };
 
-const getFullRows = (grid: State["grid"]) => {
+const getFullRows = (grid: Grid) => {
   return grid.reduce((acc: number[], row, index) => {
     if (row.every((cell) => !!cell)) {
       acc.push(index);
@@ -73,7 +183,7 @@ const getFullRows = (grid: State["grid"]) => {
   }, []);
 };
 
-const removeRows = (rows: number[], grid: State["grid"]): State["grid"] => {
+const removeRows = (rows: number[], grid: Grid): Grid => {
   const removeGrid = [...grid];
 
   rows.forEach((row) => {
@@ -83,7 +193,7 @@ const removeRows = (rows: number[], grid: State["grid"]): State["grid"] => {
   return removeGrid;
 };
 
-const moveRowsToBottom = (removedGrid: State["grid"]) => {
+const moveRowsToBottom = (removedGrid: Grid) => {
   const rowsToMove = removedGrid.reduce((acc: (number | null)[][], row) => {
     if (row.some((cell) => cell)) {
       acc.push(row);
@@ -102,11 +212,10 @@ const moveRowsToBottom = (removedGrid: State["grid"]) => {
   return newGrid;
 };
 
-
 /**
  * Clear full rows, move pieces to the bottom and update score
- * @param state 
- * @returns updated state 
+ * @param state
+ * @returns updated state
  */
 export function clearCompleteRows(state: State) {
   const fullRows = getFullRows(state.grid);
@@ -126,22 +235,22 @@ export function clearCompleteRows(state: State) {
 
 /**
  * Move the current piece 1 unit down
- * @param state 
+ * @param state
  * @returns updated state
  */
 export function fallCurrentPiece(state: State) {
   const current = state.current;
 
   if (current) {
-    const y = current.y + 1; // next position
+    const next = moveDown(current);
 
     // there's a block, can't fall
-    if (getGridCell(y, current.x, state.grid)) {
+    if (isPieceBlocked(next, state.grid)) {
       return state;
     }
     // if there's space to fall
-    if (y <= 19) {
-      return { current: { ...current, y } };
+    if (getMaxY(next) <= ROWS - 1) {
+      return { current: next };
     }
   }
 
@@ -151,7 +260,7 @@ export function fallCurrentPiece(state: State) {
 /**
  * Move the current piece on player input
  * @param input keyboard input
- * @returns 
+ * @returns
  */
 export const moveCurrentPiece = (input: KeyboardInput) => (state: State) => {
   const current = state.current;
@@ -159,39 +268,39 @@ export const moveCurrentPiece = (input: KeyboardInput) => (state: State) => {
 
   if (current) {
     if (input.left) {
-      const x = current.x - 1;
+      const next = moveLeft(current);
 
       // don't move if there's a block on that position
-      if (getGridCell(current.y, x, grid)) return state;
+      if (isPieceBlocked(next, grid)) return state;
 
       // don't move past the left limit
-      if (x >= 0) {
-        return { current: { ...current, x } };
+      if (getMinX(next) >= 0) {
+        return { current: next };
       }
     }
 
     if (input.right) {
-      const x = current.x + 1;
+      const next = moveRight(current);
 
-      if (getGridCell(current.y, x, grid)) return state;
+      if (isPieceBlocked(next, grid)) return state;
 
       // don't move past the right limit
-      if (x <= 9) {
-        return { current: { ...current, x } };
+      if (getMaxX(next) <= COLS - 1) {
+        return { current: next };
       }
     }
 
     if (input.down) {
-      const y = current.y + 1;
+      const next = moveDown(current);
 
-      if (getGridCell(y, current.x, grid)) return state;
+      if (isPieceBlocked(next, grid)) return state;
 
       // don't move below the bottom limit
-      if (y <= 19) {
-        return { current: { x: current.x, y } };
+      if (getMaxY(next) <= ROWS - 1) {
+        return { current: next };
       }
     }
   }
 
   return state;
-}
+};

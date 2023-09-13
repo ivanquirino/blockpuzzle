@@ -1,0 +1,39 @@
+.unitBlock {
+  border-style: inset;
+}
+
+
+.O {
+  background-color: rgba(204,0,175);
+  border-color: rgba(0,0,0, var(--transp));
+}
+
+.I {
+  background-color: rgba(255,0,0);
+  border-color: rgba(0,0,0, var(--transp));
+}
+
+.T {
+  background-color: rgba(0,174,174);
+  border-color: rgba(0,0,0, var(--transp));
+}
+
+.Z {
+  background-color: rgba(254,179,0);
+  border-color: rgba(0,0,0, var(--transp));
+}
+
+.S {
+  background-color: rgba(115,8,165);
+  border-color: rgba(0,0,0, var(--transp));
+}
+
+.L {
+  background-color: rgba(0,0,255);
+  border-color: rgba(0,0,0, var(--transp));
+}
+
+.J {
+  background-color: rgba(0,255,0);
+  border-color: rgba(0,0,0, var(--transp));
+}

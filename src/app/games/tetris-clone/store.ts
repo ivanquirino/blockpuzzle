@@ -1,8 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { useStore, StateCreator } from "zustand";
-import { KeyboardInput } from "./types";
-import { COLS, ROWS, scorePerRow } from "./constants";
+import { KeyboardInput, CurrentPiece, Grid } from "./types";
 import {
   placeCurrentBlock,
   spawn,
@@ -11,11 +10,13 @@ import {
   fallCurrentPiece,
   moveCurrentPiece,
 } from "./game";
+
 export interface State {
   status: "idle" | "started" | "paused" | "gameover";
   score: number;
-  grid: (number | null)[][];
-  current: { x: number; y: number } | null;
+  grid: Grid;
+  current: CurrentPiece | null;
+  currentPieceId: number | null;
 }
 
 export interface Actions {
@@ -31,6 +32,7 @@ const getInitialState = (): State => ({
   score: 0,
   grid: createGrid(),
   current: null,
+  currentPieceId: null
 });
 
 const store: StateCreator<State & Actions> = (set, get) => {
