@@ -46,6 +46,10 @@ function Page() {
       if (event.key === "Enter") {
         inputObj.enter = true;
       }
+      
+      if (event.key === "ArrowUp") {        
+        inputObj.up = true;
+      }
 
       input(inputObj);
     };

@@ -9,6 +9,7 @@ import {
   clearCompleteRows,
   fallCurrentPiece,
   moveCurrentPiece,
+  rotateClockwise,
 } from "./game";
 
 export interface State {
@@ -25,6 +26,7 @@ export interface Actions {
   pause: () => void;
   move: (input: KeyboardInput) => void;
   reset: () => void;
+  rotateClockwise: () => void;
 }
 
 const getInitialState = (): State => ({
@@ -55,6 +57,8 @@ const store: StateCreator<State & Actions> = (set, get) => {
       }
       if (input.enter) return;
 
+      if (input.up) get().rotateClockwise();
+
       get().move(input);
     },
 
@@ -79,6 +83,9 @@ const store: StateCreator<State & Actions> = (set, get) => {
 
       set(moveCurrentPiece(input));
     },
+    rotateClockwise: () => {
+      set(rotateClockwise)
+    },
     pause: () => {
       set({ status: "paused" });
       clearInterval(interval);
@@ -90,8 +97,7 @@ const store: StateCreator<State & Actions> = (set, get) => {
 };
 
 export const enhancedStore = createStore(
-  devtools(store, {
-    store: "tetris",
+  devtools(store, {    
     enabled: process.env.NODE_ENV !== "production",
   })
 );

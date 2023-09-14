@@ -124,7 +124,15 @@ const getMaxX = (piece: CurrentPiece) => {
   }, piece[0].x);
 };
 
-const rotateClockwise = (piece: CurrentPiece) => {};
+export const rotateClockwise = (state: State) => {
+  const piece = state.current;
+
+  if (piece) {
+    return { current: piece.map(({ x, y}) => ({ y: x, x: y}))};
+  }  
+
+  return state;
+};
 
 /**
  * Place the current block on the grid, removing the current piece

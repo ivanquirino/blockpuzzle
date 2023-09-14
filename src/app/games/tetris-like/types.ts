@@ -3,6 +3,7 @@ export interface KeyboardInput {
   right: boolean;
   down: boolean;
   enter: boolean;
+  up: boolean;
 }
 
 export interface Block {
