@@ -2,3 +2,8 @@
 * spawn blocks
 * block collision
 * line clear
+
+
+## Rotation 
+
+

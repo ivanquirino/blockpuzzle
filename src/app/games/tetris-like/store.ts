@@ -1,15 +1,15 @@
 import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { useStore, StateCreator } from "zustand";
-import { KeyboardInput, CurrentPiece, Grid } from "./types";
+import { KeyboardInput, CurrentPiece, Grid, PieceId } from "./types";
 import {
   placeCurrentBlock,
   spawn,
   createGrid,
   clearCompleteRows,
   fallCurrentPiece,
-  moveCurrentPiece,
-  rotateClockwise,
+  moveCurrentPiece,  
+  rotateCWOnGrid,
 } from "./game";
 
 export interface State {
@@ -17,7 +17,7 @@ export interface State {
   score: number;
   grid: Grid;
   current: CurrentPiece | null;
-  currentPieceId: number | null;
+  currentPieceId: PieceId | null;
 }
 
 export interface Actions {
@@ -34,7 +34,7 @@ const getInitialState = (): State => ({
   score: 0,
   grid: createGrid(),
   current: null,
-  currentPieceId: null
+  currentPieceId: null,
 });
 
 const store: StateCreator<State & Actions> = (set, get) => {
@@ -84,9 +84,10 @@ const store: StateCreator<State & Actions> = (set, get) => {
       set(moveCurrentPiece(input));
     },
     rotateClockwise: () => {
-      set(rotateClockwise)
+      set(rotateCWOnGrid);
     },
     pause: () => {
+      // if (get().status !== "started") return;
       set({ status: "paused" });
       clearInterval(interval);
     },
@@ -97,7 +98,7 @@ const store: StateCreator<State & Actions> = (set, get) => {
 };
 
 export const enhancedStore = createStore(
-  devtools(store, {    
+  devtools(store, {
     enabled: process.env.NODE_ENV !== "production",
   })
 );

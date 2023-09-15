@@ -1,60 +1,68 @@
 import { State } from "./store";
 import { scorePerRow, ROWS, COLS } from "./constants";
-import { KeyboardInput, CurrentPiece, Grid } from "./types";
+import { KeyboardInput, CurrentPiece, Grid, PieceId } from "./types";
 
-const pieceO = [
+export const pieceO = [
   { x: 4, y: 0 },
   { x: 5, y: 0 },
   { x: 4, y: 1 },
   { x: 5, y: 1 },
 ];
 
-const pieceI = [
+export const pieceI = [
   { x: 3, y: 1 },
   { x: 4, y: 1 },
   { x: 5, y: 1 },
   { x: 6, y: 1 },
 ];
 
-const pieceT = [
+export const pieceT = [
   { x: 4, y: 0 },
   { x: 3, y: 1 },
   { x: 4, y: 1 },
   { x: 5, y: 1 },
 ];
 
-const pieceZ = [
+export const pieceZ = [
   { x: 3, y: 0 },
   { x: 4, y: 0 },
   { x: 4, y: 1 },
   { x: 5, y: 1 },
 ];
 
-const pieceS = [
+export const pieceS = [
   { x: 4, y: 0 },
   { x: 5, y: 0 },
   { x: 3, y: 1 },
   { x: 4, y: 1 },
 ];
 
-const pieceL = [
+export const pieceL = [
   { x: 5, y: 0 },
   { x: 3, y: 1 },
   { x: 4, y: 1 },
   { x: 5, y: 1 },
 ];
 
-const pieceJ = [
+export const pieceJ = [
   { x: 3, y: 0 },
   { x: 3, y: 1 },
   { x: 4, y: 1 },
   { x: 5, y: 1 },
 ];
 
-const pieces = [pieceO, pieceI, pieceT, pieceZ, pieceS, pieceL, pieceJ];
+const pieces: Record<string, CurrentPiece> = {
+  1: pieceO,
+  2: pieceI,
+  3: pieceT,
+  4: pieceZ,
+  5: pieceS,
+  6: pieceL,
+  7: pieceJ,
+};
 
 const getRandomPieceIndex = () => {
-  return Math.round(Math.random() * (pieces.length - 1));
+  return Math.round(Math.random() * 6) + 1;
 };
 
 /**
@@ -63,10 +71,11 @@ const getRandomPieceIndex = () => {
  * @returns updated state
  */
 export function spawn(state: State) {
-  const index = getRandomPieceIndex();
+  const index = getRandomPieceIndex() as PieceId;
+  const piece = pieces[index];
 
   return state.current === null
-    ? { current: pieces[index], currentPieceId: index + 1 }
+    ? { current: piece, currentPieceId: index }
     : state;
 }
 
@@ -124,12 +133,63 @@ const getMaxX = (piece: CurrentPiece) => {
   }, piece[0].x);
 };
 
-export const rotateClockwise = (state: State) => {
-  const piece = state.current;
+// piece block pivot index taken from testing
+const pivotIndex = {
+  2: 2,
+  3: 2,
+  4: 2,
+  5: 3,
+  6: 2,
+  7: 2,
+};
 
-  if (piece) {
-    return { current: piece.map(({ x, y}) => ({ y: x, x: y}))};
-  }  
+// Source for rotation algorithm
+// https://www.alibabacloud.com/blog/the-use-of-vector-rotation-in-a-two-dimensional-space_599766
+
+const rotationMatrix = [
+  [0, -1],
+  [1, 0],
+];
+
+export const rotateClockwise = (
+  piece: CurrentPiece,
+  pieceId: NonNullable<State["currentPieceId"]>
+) => {
+  if (pieceId === 1) return piece;
+
+  const pivot = piece[pivotIndex[pieceId]];
+
+  const translated = piece.map(({ x, y }) => {
+    return { x: x - pivot.x, y: y - pivot.y };
+  });
+
+  const rotated = translated.map(({ x, y }) => {
+    return {
+      x: x * rotationMatrix[0][0] + y * rotationMatrix[1][0],
+      y: x * rotationMatrix[0][1] + y * rotationMatrix[1][1],
+    };
+  });
+
+  const translatedBack = rotated.map(({ x, y }) => {
+    return { x: x + pivot.x, y: y + pivot.y };
+  });
+
+  return translatedBack;
+};
+
+export const rotateCWOnGrid = (state: State) => {
+  if (state.current && state.currentPieceId) {
+    const rotated = rotateClockwise(state.current, state.currentPieceId);
+
+    if (isPieceBlocked(rotated, state.grid)) return state;
+    if (getMinX(rotated) < 0) return state;
+    if (getMaxX(rotated) > COLS - 1) return state;
+    if (getMaxY(rotated) > ROWS - 1) return state;
+
+    return {
+      current: rotated,
+    };
+  }
 
   return state;
 };
@@ -178,12 +238,12 @@ export const createGrid = () => {
     grid.push(NullArray(COLS));
   }
 
-  return grid as (null | number)[][];
+  return grid as (PieceId | null)[][];
 };
 
 const getFullRows = (grid: Grid) => {
   return grid.reduce((acc: number[], row, index) => {
-    if (row.every((cell) => !!cell)) {
+    if (row.every((cell) => cell)) {
       acc.push(index);
     }
 
@@ -202,7 +262,7 @@ const removeRows = (rows: number[], grid: Grid): Grid => {
 };
 
 const moveRowsToBottom = (removedGrid: Grid) => {
-  const rowsToMove = removedGrid.reduce((acc: (number | null)[][], row) => {
+  const rowsToMove = removedGrid.reduce((acc: (PieceId | null)[][], row) => {
     if (row.some((cell) => cell)) {
       acc.push(row);
     }

@@ -13,6 +13,10 @@ export interface Block {
   color: number;
 }
 
+export type PieceId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
 export type CurrentPiece = { x: number; y: number }[];
 
-export type Grid = (number | null)[][];
+export type Grid = (PieceId | null)[][];
+
+
