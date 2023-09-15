@@ -9,7 +9,7 @@ import {
   clearCompleteRows,
   fallCurrentPiece,
   moveCurrentPiece,  
-  rotateCWOnGrid,
+  rotateClockwise,
 } from "./game";
 
 export interface State {
@@ -84,10 +84,11 @@ const store: StateCreator<State & Actions> = (set, get) => {
       set(moveCurrentPiece(input));
     },
     rotateClockwise: () => {
-      set(rotateCWOnGrid);
+      set(rotateClockwise);
     },
     pause: () => {
-      // if (get().status !== "started") return;
+      if (get().status !== "started") return;
+      
       set({ status: "paused" });
       clearInterval(interval);
     },

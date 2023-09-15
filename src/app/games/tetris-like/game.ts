@@ -72,6 +72,7 @@ const getRandomPieceIndex = () => {
  */
 export function spawn(state: State) {
   const index = getRandomPieceIndex() as PieceId;
+  // const index = 2
   const piece = pieces[index];
 
   return state.current === null
@@ -105,16 +106,16 @@ const getMaxY = (piece: CurrentPiece) => {
   }, piece[0].y);
 };
 
-const moveLeft = (current: CurrentPiece) => {
+const moveLeft = (current: CurrentPiece, units = 1) => {
   return current.map((pos) => {
-    const x = pos.x - 1;
+    const x = pos.x - units;
     return { ...pos, x };
   });
 };
 
-const moveRight = (current: CurrentPiece) => {
+const moveRight = (current: CurrentPiece, units = 1) => {
   return current.map((pos) => {
-    const x = pos.x + 1;
+    const x = pos.x + units;
     return { ...pos, x };
   });
 };
@@ -151,7 +152,7 @@ const rotationMatrix = [
   [1, 0],
 ];
 
-export const rotateClockwise = (
+export const rotatePieceClockwise = (
   piece: CurrentPiece,
   pieceId: NonNullable<State["currentPieceId"]>
 ) => {
@@ -177,13 +178,33 @@ export const rotateClockwise = (
   return translatedBack;
 };
 
-export const rotateCWOnGrid = (state: State) => {
-  if (state.current && state.currentPieceId) {
-    const rotated = rotateClockwise(state.current, state.currentPieceId);
+export const rotateClockwise = (state: State) => {
+  if (state.current && state.currentPieceId) {    
+    const rotated = rotatePieceClockwise(state.current, state.currentPieceId);
 
     if (isPieceBlocked(rotated, state.grid)) return state;
-    if (getMinX(rotated) < 0) return state;
-    if (getMaxX(rotated) > COLS - 1) return state;
+
+    const minX = getMinX(rotated);
+    
+    if (minX < 0) {
+      const moved = moveRight(rotated, -minX);
+
+      if (isPieceBlocked(moved, state.grid)) return state;
+      return { current: moved };
+    }
+
+    const maxX = getMaxX(rotated);
+    
+    if (maxX > COLS - 1) {
+      console.log("ROTATED", maxX, rotated, maxX - (COLS -1))
+      const moved = moveLeft(rotated, maxX - (COLS - 1));
+
+      if (isPieceBlocked(moved, state.grid)) return state;
+      console.log("MOVED", moved)
+      
+      return { current: moved };
+    }
+
     if (getMaxY(rotated) > ROWS - 1) return state;
 
     return {
