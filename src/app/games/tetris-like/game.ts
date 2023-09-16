@@ -72,7 +72,7 @@ const getRandomPieceIndex = () => {
  */
 export function spawn(state: State) {
   const index = getRandomPieceIndex() as PieceId;
-  // const index = 2
+  // const index = 6;
   const piece = pieces[index];
 
   return state.current === null
@@ -97,6 +97,34 @@ const moveDown = (piece: CurrentPiece) => {
 
 const isPieceBlocked = (piece: CurrentPiece, grid: Grid) => {
   return piece.some((pos) => getGridCell(pos.y, pos.x, grid));
+};
+
+const getCollisions = (piece: CurrentPiece, grid: Grid) => {
+  const collisions = piece.reduce(
+    (acc, pos) => {
+      if (pos.y > ROWS - 1) {
+        acc.down.push(pos);
+      }
+      if (pos.x > COLS - 1) {
+        acc.right.push(pos);
+      }
+      if (pos.x < 0) {
+        acc.left.push(pos);
+      }
+      if (getGridCell(pos.y, pos.x, grid)) {
+        acc.blocks.push(pos)
+      }
+
+      return acc;
+    },
+    {
+      blocks: [] as CurrentPiece,
+      down: [] as CurrentPiece,
+      left: [] as CurrentPiece,
+      right: [] as CurrentPiece,
+    }
+  );
+  return collisions;
 };
 
 const getMaxY = (piece: CurrentPiece) => {
@@ -148,8 +176,8 @@ const pivotIndex = {
 // https://www.alibabacloud.com/blog/the-use-of-vector-rotation-in-a-two-dimensional-space_599766
 
 const rotationMatrix = [
-  [0, -1],
-  [1, 0],
+  [0, 1],
+  [-1, 0],
 ];
 
 export const rotatePieceClockwise = (
@@ -178,38 +206,58 @@ export const rotatePieceClockwise = (
   return translatedBack;
 };
 
+const getMinMaxX = (piece: CurrentPiece) => {
+  return piece.reduce(
+    (acc, pos) => {
+      if (pos.x < acc[0]) acc[0] = pos.x;
+      if (pos.x > acc[1]) acc[1] = pos.x;
+      return acc;
+    },
+    [piece[0].x, piece[0].x]
+  );
+}
+
 export const rotateClockwise = (state: State) => {
-  if (state.current && state.currentPieceId) {    
+  if (state.current && state.currentPieceId) {
     const rotated = rotatePieceClockwise(state.current, state.currentPieceId);
 
-    if (isPieceBlocked(rotated, state.grid)) return state;
+    let { blocks, left, right, down } = getCollisions(rotated, state.grid);
 
-    const minX = getMinX(rotated);
-    
-    if (minX < 0) {
-      const moved = moveRight(rotated, -minX);
+    let moved = rotated;
 
-      if (isPieceBlocked(moved, state.grid)) return state;
-      return { current: moved };
+    if (blocks.length > 0) {
+      const [minX, maxX] = getMinMaxX(rotated);
+      const [minX1, maxX1] = getMinMaxX(blocks);
+
+      const d1 = Math.abs(maxX1 - maxX);
+      const d2 = Math.abs(maxX1 - minX);
+
+      if (d1 < d2) {
+        moved = moveLeft(rotated, blocks.length);
+      }
+
+      const d3 = Math.abs(minX - minX1);
+      const d4 = Math.abs(maxX - minX1);
+
+      if (d4 > d3) {
+        moved = moveRight(rotated, blocks.length)
+      }      
     }
 
-    const maxX = getMaxX(rotated);
-    
-    if (maxX > COLS - 1) {
-      console.log("ROTATED", maxX, rotated, maxX - (COLS -1))
-      const moved = moveLeft(rotated, maxX - (COLS - 1));
-
-      if (isPieceBlocked(moved, state.grid)) return state;
-      console.log("MOVED", moved)
-      
-      return { current: moved };
+    if (right.length > 0) {
+      moved = moveLeft(moved, getMaxX(right) - (COLS -1));
     }
 
-    if (getMaxY(rotated) > ROWS - 1) return state;
+    if (left.length > 0) {
+      moved = moveRight(moved, -getMinX(left));
+    }
 
-    return {
-      current: rotated,
-    };
+    if (down.length > 0) {
+      moved = moveUp(moved, getMaxY(down) - (ROWS -1));
+    }
+
+    if (isPieceBlocked(moved, state.grid)) return state;
+    return { current: moved };
   }
 
   return state;
@@ -392,4 +440,11 @@ export const moveCurrentPiece = (input: KeyboardInput) => (state: State) => {
   }
 
   return state;
+};
+
+const moveUp = (piece: CurrentPiece, units: number) => {
+  return piece.map((pos) => {
+    const y = pos.y - units;
+    return { ...pos, y };
+  });
 };
