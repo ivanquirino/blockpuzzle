@@ -51,7 +51,7 @@ export const pieceJ = [
   { x: 5, y: 1 },
 ];
 
-const pieces: Record<string, CurrentPiece> = {
+const pieces: Record<PieceId, CurrentPiece> = {
   1: pieceO,
   2: pieceI,
   3: pieceT,
@@ -70,14 +70,21 @@ const getRandomPieceIndex = () => {
  * @param state
  * @returns updated state
  */
-export function spawn(state: State) {
-  const index = getRandomPieceIndex() as PieceId;
+export const spawn = (bag: PieceId[]) => (state: State) => {
+  // const index = getRandomPieceIndex() as PieceId;
   // const index = 6;
-  const piece = pieces[index];
+  // const piece = pieces[index];
 
-  return state.current === null
-    ? { current: piece, currentPieceId: index }
-    : state;
+  if (state.current === null) {
+    const [currentPieceId, ...rest] = bag;
+    const current = pieces[currentPieceId];
+
+    return {
+      current, currentPieceId, spawnBag: rest
+    }
+  }
+
+  return state;
 }
 
 const getGridCell = (row: number, col: number, grid: Grid) => {
@@ -112,7 +119,7 @@ const getCollisions = (piece: CurrentPiece, grid: Grid) => {
         acc.left.push(pos);
       }
       if (getGridCell(pos.y, pos.x, grid)) {
-        acc.blocks.push(pos)
+        acc.blocks.push(pos);
       }
 
       return acc;
@@ -215,7 +222,7 @@ const getMinMaxX = (piece: CurrentPiece) => {
     },
     [piece[0].x, piece[0].x]
   );
-}
+};
 
 export const rotateClockwise = (state: State) => {
   if (state.current && state.currentPieceId) {
@@ -240,12 +247,12 @@ export const rotateClockwise = (state: State) => {
       const d4 = Math.abs(maxX - minX1);
 
       if (d4 > d3) {
-        moved = moveRight(rotated, blocks.length)
-      }      
+        moved = moveRight(rotated, blocks.length);
+      }
     }
 
     if (right.length > 0) {
-      moved = moveLeft(moved, getMaxX(right) - (COLS -1));
+      moved = moveLeft(moved, getMaxX(right) - (COLS - 1));
     }
 
     if (left.length > 0) {
@@ -253,7 +260,7 @@ export const rotateClockwise = (state: State) => {
     }
 
     if (down.length > 0) {
-      moved = moveUp(moved, getMaxY(down) - (ROWS -1));
+      moved = moveUp(moved, getMaxY(down) - (ROWS - 1));
     }
 
     if (isPieceBlocked(moved, state.grid)) return state;
@@ -447,4 +454,18 @@ const moveUp = (piece: CurrentPiece, units: number) => {
     const y = pos.y - units;
     return { ...pos, y };
   });
+};
+
+/**
+ * generates a random set of 7 pieces
+ */
+export const generateRandomPieceSet = () => {
+  const set = new Set<PieceId>();
+
+  while (set.size < 7) {
+    const num = Math.round(Math.random() * 6) + 1;
+    set.add(num as PieceId);
+  }
+
+  return set;
 };

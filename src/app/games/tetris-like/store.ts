@@ -8,8 +8,9 @@ import {
   createGrid,
   clearCompleteRows,
   fallCurrentPiece,
-  moveCurrentPiece,  
+  moveCurrentPiece,
   rotateClockwise,
+  generateRandomPieceSet,
 } from "./game";
 
 export interface State {
@@ -18,6 +19,7 @@ export interface State {
   grid: Grid;
   current: CurrentPiece | null;
   currentPieceId: PieceId | null;
+  spawnBag: PieceId[];
 }
 
 export interface Actions {
@@ -35,10 +37,24 @@ const getInitialState = (): State => ({
   grid: createGrid(),
   current: null,
   currentPieceId: null,
+  spawnBag: [],
 });
 
 const store: StateCreator<State & Actions> = (set, get) => {
   let interval: any;
+
+  const getPieceSet = () => {
+    const { spawnBag } = get();
+
+    if (spawnBag.length === 0) {
+      const set = generateRandomPieceSet();
+      const bag = Array.from(set);
+
+      return bag;
+    }
+
+    return spawnBag;
+  };
 
   return {
     ...getInitialState(),
@@ -65,17 +81,15 @@ const store: StateCreator<State & Actions> = (set, get) => {
     start: () => {
       set({ status: "started" });
 
-      set(spawn);
-
       // game loop
       interval = setInterval(() => {
+        set(spawn(getPieceSet()));
+
         set(placeCurrentBlock);
 
         set(clearCompleteRows);
 
         set(fallCurrentPiece);
-
-        set(spawn);
       }, 1000);
     },
     move: (input) => {
@@ -88,13 +102,14 @@ const store: StateCreator<State & Actions> = (set, get) => {
     },
     pause: () => {
       if (get().status !== "started") return;
-      
+
       set({ status: "paused" });
       clearInterval(interval);
     },
     reset: () => {
       set(getInitialState());
     },
+    
   };
 };
 
