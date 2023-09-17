@@ -1,8 +1,12 @@
 import { Metadata } from "next";
-import Game from "./components/Game";
+import GameClient from "./components/GameClient";
 
 function Page() {
-  return <Game />;
+  return (
+    <div className="h-[100%] flex justify-center items-center">
+      <GameClient />
+    </div>
+  );
 }
 
 export default Page;

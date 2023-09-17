@@ -2,6 +2,9 @@
 * spawn blocks
 * block collision
 * line clear
+* rotation
+* random generator
+* next piece
 
 
 ## Rotation 

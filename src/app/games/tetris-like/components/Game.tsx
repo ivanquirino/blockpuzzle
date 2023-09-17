@@ -1,30 +1,28 @@
-"use client";
-
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { forwardRef, useEffect } from "react";
 import { useGameStore } from "../store";
 import UnitBlock from "./UnitBlock";
 import {
-  baseWidth,
-  baseHeight,
-  baseSize,
   acceptedKeys,
   idleInput,
 } from "../constants";
+import Status from "./Status";
 
-function Game() {
-  const gridRef = useRef<HTMLDivElement>(null);
+interface GameProps {
+  width: number;
+  height: number;
+  blockSize: number
+}
+
+const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
+  const { width, height, blockSize } = props;  
 
   const grid = useGameStore((state) => state.grid);
-  const status = useGameStore((state) => state.status);
+
   const input = useGameStore((state) => state.input);
   const current = useGameStore((state) => state.current);
-  const score = useGameStore((state) => state.score);
   const currentPieceId = useGameStore((state) => state.currentPieceId);
-
-  const [gridWidth, setGridWidth] = useState(baseWidth);
-  const [gridHeight, setGridHeight] = useState(baseHeight);
-  const [blockSize, setBlockSize] = useState(baseSize);
-  const [ready, setReady] = useState(false);
+  
+  const isReady = useGameStore(state => state.status !== "loading")
 
   useEffect(() => {
     const keyboardHandler = (event: KeyboardEvent) => {
@@ -60,36 +58,18 @@ function Game() {
     };
   }, [input]);
 
-  useLayoutEffect(() => {
-    const width = gridRef.current?.clientWidth || 0;
-    const multiplier = Math.floor(width / baseWidth);
-
-    setGridWidth(baseWidth * multiplier);
-    setGridHeight(baseHeight * multiplier);
-    setBlockSize(baseSize * multiplier);
-    setReady(true);
-  }, []);
-
   return (
-    <div className="h-[100%] flex justify-center items-center">
-      {ready && (
-        <>
-          <h3 className="absolute top-2">
-            {status === "idle" ? "Press ENTER to start" : status}
-          </h3>
-          <h3 className="absolute top-2 left-2">Score: {score}</h3>
-        </>
-      )}
-
+    <div className="flex flex-col items-center justify-center ">
+      <Status />
       <div
-        ref={gridRef}
+        ref={ref}
         className="w-[40vh] h-[80vh] flex justify-center items-center"
       >
-        {ready && (
+        {isReady && (
           <div
             style={{
-              width: gridWidth,
-              height: gridHeight,
+              width,
+              height,
             }}
             className="border-[1px] border-white relative box-content"
           >
@@ -100,8 +80,8 @@ function Game() {
                   y > 1 && (
                     <UnitBlock
                       key={`${x}-${y}`}
-                      x={x * blockSize}
-                      y={(y - 2) * blockSize}
+                      x={x}
+                      y={y - 2}
                       size={blockSize}
                       color={currentPieceId}
                     />
@@ -115,8 +95,8 @@ function Game() {
                     col && (
                       <UnitBlock
                         key={`${y}${x}`}
-                        x={x * blockSize}
-                        y={(y - 2) * blockSize}
+                        x={x}
+                        y={y - 2}
                         size={blockSize}
                         color={col}
                       />
@@ -128,6 +108,6 @@ function Game() {
       </div>
     </div>
   );
-}
+})
 
 export default Game;

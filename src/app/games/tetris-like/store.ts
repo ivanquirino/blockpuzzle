@@ -14,7 +14,7 @@ import {
 } from "./game";
 
 export interface State {
-  status: "idle" | "started" | "paused" | "gameover";
+  status: "loading" | "idle" | "started" | "paused" | "gameover";
   score: number;
   grid: Grid;
   current: CurrentPiece | null;
@@ -29,10 +29,11 @@ export interface Actions {
   move: (input: KeyboardInput) => void;
   reset: () => void;
   rotateClockwise: () => void;
+  ready: () => void;
 }
 
 const getInitialState = (): State => ({
-  status: "idle",
+  status: "loading",
   score: 0,
   grid: createGrid(),
   current: null,
@@ -43,12 +44,16 @@ const getInitialState = (): State => ({
 const store: StateCreator<State & Actions> = (set, get) => {
   let interval: any;
 
-  const getPieceSet = () => {
+  // this function has the random generator sideEffect
+  // and can't be written as a function of state and input
+  const generatePieceSet = () => {
     const { spawnBag } = get();
 
     if (spawnBag.length === 0) {
-      const set = generateRandomPieceSet();
-      const bag = Array.from(set);
+      const pieceSet = generateRandomPieceSet();
+      const bag = Array.from(pieceSet);
+      
+      set({ spawnBag: bag })
 
       return bag;
     }
@@ -61,6 +66,8 @@ const store: StateCreator<State & Actions> = (set, get) => {
 
     input: (input) => {
       const status = get().status;
+
+      if (status === "loading") return;
 
       if (input.enter && status === "idle") {
         get().start();
@@ -81,15 +88,18 @@ const store: StateCreator<State & Actions> = (set, get) => {
     start: () => {
       set({ status: "started" });
 
+      generatePieceSet();
+      set(spawn);
       // game loop
       interval = setInterval(() => {
-        set(spawn(getPieceSet()));
-
         set(placeCurrentBlock);
 
         set(clearCompleteRows);
 
         set(fallCurrentPiece);
+
+        generatePieceSet();
+        set(spawn);
       }, 1000);
     },
     move: (input) => {
@@ -109,7 +119,9 @@ const store: StateCreator<State & Actions> = (set, get) => {
     reset: () => {
       set(getInitialState());
     },
-    
+    ready: () => {
+      set({ status: "idle" });
+    },
   };
 };
 

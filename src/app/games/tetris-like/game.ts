@@ -51,7 +51,7 @@ export const pieceJ = [
   { x: 5, y: 1 },
 ];
 
-const pieces: Record<PieceId, CurrentPiece> = {
+export const pieces: Record<PieceId, CurrentPiece> = {
   1: pieceO,
   2: pieceI,
   3: pieceT,
@@ -61,22 +61,18 @@ const pieces: Record<PieceId, CurrentPiece> = {
   7: pieceJ,
 };
 
-const getRandomPieceIndex = () => {
-  return Math.round(Math.random() * 6) + 1;
-};
-
 /**
  * Spawns the current piece
  * @param state
  * @returns updated state
  */
-export const spawn = (bag: PieceId[]) => (state: State) => {
+export const spawn = (state: State) => {
   // const index = getRandomPieceIndex() as PieceId;
   // const index = 6;
   // const piece = pieces[index];
 
   if (state.current === null) {
-    const [currentPieceId, ...rest] = bag;
+    const [currentPieceId, ...rest] = state.spawnBag;
     const current = pieces[currentPieceId];
 
     return {

@@ -25,8 +25,8 @@ function UnitBlock(props: Block) {
   return (
     <div
       style={{
-        left: x,
-        top: y,
+        left: x * size,
+        top: y * size,
         width: size,
         height: size,
       }}
