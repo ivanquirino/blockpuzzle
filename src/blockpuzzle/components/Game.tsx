@@ -1,28 +1,26 @@
 import { forwardRef, useEffect } from "react";
 import { useGameStore } from "../store";
 import UnitBlock from "./UnitBlock";
-import {
-  acceptedKeys,
-  idleInput,
-} from "../constants";
+import { acceptedKeys, idleInput } from "../constants";
 import Status from "./Status";
+import GridBlock from "./GridBlock";
 
 interface GameProps {
   width: number;
   height: number;
-  blockSize: number
+  blockSize: number;
 }
 
 const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
-  const { width, height, blockSize } = props;  
+  const { width, height, blockSize } = props;
 
   const grid = useGameStore((state) => state.grid);
 
   const input = useGameStore((state) => state.input);
   const current = useGameStore((state) => state.current);
   const currentPieceId = useGameStore((state) => state.currentPieceId);
-  
-  const isReady = useGameStore(state => state.status !== "loading")
+
+  const isReady = useGameStore((state) => state.status !== "loading");
 
   useEffect(() => {
     const keyboardHandler = (event: KeyboardEvent) => {
@@ -90,9 +88,15 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
             {grid.map(
               (row, y) =>
                 y > 1 &&
-                row.map(
-                  (col, x) =>
-                    col && (
+                row.map((col, x) => (
+                  <>
+                    <GridBlock
+                      key={`g${x}${y}`}
+                      x={x}
+                      y={y - 2}
+                      size={blockSize}
+                    />
+                    {col && (
                       <UnitBlock
                         key={`${y}${x}`}
                         x={x}
@@ -100,14 +104,15 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
                         size={blockSize}
                         color={col}
                       />
-                    )
-                )
+                    )}
+                  </>
+                ))
             )}
           </div>
         )}
       </div>
     </div>
   );
-})
+});
 
 export default Game;
