@@ -11,6 +11,7 @@ import {
   moveCurrentPiece,
   rotateClockwise,
   generateRandomPieceSet,
+  isGameOver,
 } from "./game";
 
 export interface State {
@@ -52,8 +53,8 @@ const store: StateCreator<State & Actions> = (set, get) => {
     if (spawnBag.length === 0) {
       const pieceSet = generateRandomPieceSet();
       const bag = Array.from(pieceSet);
-      
-      set({ spawnBag: bag })
+
+      set({ spawnBag: bag });
 
       return bag;
     }
@@ -78,6 +79,9 @@ const store: StateCreator<State & Actions> = (set, get) => {
       if (input.enter && status === "paused") {
         get().start();
       }
+      if (input.enter && status === "gameover") {
+        get().reset();
+      }
       if (input.enter) return;
 
       if (input.up) get().rotateClockwise();
@@ -96,10 +100,17 @@ const store: StateCreator<State & Actions> = (set, get) => {
 
         set(clearCompleteRows);
 
+        if (isGameOver(get())) {
+          set({ status: "gameover" });
+          clearInterval(interval);
+          return;
+        }
+
         set(fallCurrentPiece);
 
-        generatePieceSet();
         set(spawn);
+
+        generatePieceSet();
       }, 1000);
     },
     move: (input) => {
@@ -117,7 +128,7 @@ const store: StateCreator<State & Actions> = (set, get) => {
       clearInterval(interval);
     },
     reset: () => {
-      set(getInitialState());
+      set({ ...getInitialState(), status: "idle" });
     },
     ready: () => {
       set({ status: "idle" });

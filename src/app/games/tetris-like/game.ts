@@ -465,3 +465,10 @@ export const generateRandomPieceSet = () => {
 
   return set;
 };
+
+
+export const isGameOver = (state: State) => {
+  if (state.grid[1].some(cell => cell)) return true;
+
+  return false;
+}
