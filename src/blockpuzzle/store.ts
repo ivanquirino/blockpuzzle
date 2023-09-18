@@ -119,6 +119,8 @@ const store: StateCreator<State & Actions> = (set, get) => {
       set(moveCurrentPiece(input));
     },
     rotateClockwise: () => {
+      if (get().status !== "started") return;
+            
       set(rotateClockwise);
     },
     pause: () => {

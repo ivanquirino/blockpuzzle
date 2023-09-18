@@ -7,6 +7,8 @@ import UnitBlock from "./UnitBlock";
 import { acceptedKeys, idleInput } from "../constants";
 import Status from "./Status";
 import GridBlock from "./GridBlock";
+import Gamepad from "./Gamepad";
+7;
 
 interface GameProps {
   width: number;
@@ -59,21 +61,23 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
     };
   }, [input]);
 
+  const handleBoardClick = () => {
+    input({ ...idleInput, enter: true });
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center ">
-      <Status />
-      <div
-        ref={ref}
-        className="w-[40vh] h-[80vh] flex justify-center items-center"
-      >
+    <>
+      <div ref={ref} className="w-[40vh] h-[80vh] flex flex-col items-center">
         {isReady && (
           <div
             style={{
               width,
               height,
             }}
-            className="border-[1px] border-white relative box-content"
+            className="border-[1px] border-white relative box-content flex justify-center items-center"
+            onClick={handleBoardClick}
           >
+            <Status />
             {current &&
               currentPieceId &&
               current.map(
@@ -103,7 +107,8 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
           </div>
         )}
       </div>
-    </div>
+      <Gamepad />
+    </>
   );
 });
 

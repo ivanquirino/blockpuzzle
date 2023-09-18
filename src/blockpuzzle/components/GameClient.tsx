@@ -1,16 +1,13 @@
 "use client";
 
 import Game from "./Game";
-import Controls from "./Controls";
-import GameInfo from "./GameInfo";
 import { useGameStore } from "../store";
 import { useLayoutEffect, useRef, useState } from "react";
 import { baseWidth, baseHeight, baseSize } from "../constants";
 import Music from "./Music";
+import TopUI from "./TopUI";
 
-function GameClient() {
-  const isReady = useGameStore((state) => state.status !== "loading");
-
+function GameClient() {  
   const gridRef = useRef<HTMLDivElement>(null);
 
   const [width, setGridWidth] = useState(baseWidth);
@@ -30,12 +27,11 @@ function GameClient() {
   }, [ready]);
 
   return (
-    <>
-      {isReady && <GameInfo blockSize={blockSize} />}
+    <div>
+      <TopUI />
       <Game ref={gridRef} width={width} height={height} blockSize={blockSize} />
-      {isReady && <Controls />}{" "}
       <Music />
-    </>
+    </div>
   );
 }
 

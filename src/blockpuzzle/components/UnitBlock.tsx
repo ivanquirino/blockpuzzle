@@ -17,7 +17,7 @@ function UnitBlock(props: Block) {
   const { x, y, size, color } = props;
 
   const classes = classNames(
-    "bg-white rounded aspect-square border-[4px] absolute unit-block z-50",
+    "bg-white rounded aspect-square absolute unit-block z-40",
     styles.unitBlock,
     colors[color]
   );
@@ -29,6 +29,7 @@ function UnitBlock(props: Block) {
         top: y * size,
         width: size,
         height: size,
+        borderWidth: size / 4
       }}
       className={classes}
     />
