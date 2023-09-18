@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Block Puzzle Game',
-  description: 'A Block Puzzle game for educational purposes',
+  description: 'A block puzzle game for educational purposes',
 }
 
 export default function RootLayout({

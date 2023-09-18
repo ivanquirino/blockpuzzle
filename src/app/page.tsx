@@ -1,6 +1,3 @@
-import Image from 'next/image'
-
-import { Metadata } from "next";
 import GameClient from "#/blockpuzzle/components/GameClient";
 
 function Page() {
