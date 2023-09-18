@@ -14,15 +14,15 @@ const Music = () => {
     const musicRef = ref.current;
     // calling load() on status changes resets the music
     // that's why it was needed to subscribe directly to the store
-    musicRef?.load();
-
-    if (musicRef) {
-      musicRef.volume = 0.5;
-    }
+    musicRef?.load();    
 
     let unsub: any;
 
     const onLoadedData = () => {
+      if (musicRef) {
+        musicRef.volume = 0.5;
+      }
+
       unsub = enhancedStore.subscribe((state, prevState) => {
         if (prevState !== state) {
           const status = state.status;
@@ -35,7 +35,7 @@ const Music = () => {
           }
           if (status === "gameover") {
             musicRef?.pause();
-            musicRef?.fastSeek(0);
+            if (musicRef) musicRef.currentTime = 0;            
           }
         }
       });
