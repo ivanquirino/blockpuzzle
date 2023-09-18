@@ -45,7 +45,7 @@ const Music = () => {
     };
   }, []);
 
-  return <audio ref={ref} src="/korobeiniki.ogg" loop />;
+  return <audio ref={ref} src="https://raw.githubusercontent.com/ivanquirino/blockpuzzle/main/public/korobeiniki.ogg" loop />;
 };
 
 export default Music;
