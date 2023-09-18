@@ -85,8 +85,6 @@ const PieceDisplay = ({
 }) => {
   const translated = translatePieceToOrigin(piece);
 
-  console.log(translated);
-
   return translated.map(({ x, y }) => (
     <UnitBlock key={`${y}${x}`} x={x} y={y} size={blockSize} color={pieceId} />
   ));

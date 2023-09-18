@@ -1,4 +1,7 @@
-import { forwardRef, useEffect } from "react";
+/**
+ * Input and Rendering
+ */
+import { Fragment, forwardRef, useEffect } from "react";
 import { useGameStore } from "../store";
 import UnitBlock from "./UnitBlock";
 import { acceptedKeys, idleInput } from "../constants";
@@ -89,23 +92,12 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
               (row, y) =>
                 y > 1 &&
                 row.map((col, x) => (
-                  <>
-                    <GridBlock
-                      key={`g${x}${y}`}
-                      x={x}
-                      y={y - 2}
-                      size={blockSize}
-                    />
+                  <Fragment key={`${y}${x}`}>
+                    <GridBlock x={x} y={y - 2} size={blockSize} />
                     {col && (
-                      <UnitBlock
-                        key={`${y}${x}`}
-                        x={x}
-                        y={y - 2}
-                        size={blockSize}
-                        color={col}
-                      />
+                      <UnitBlock x={x} y={y - 2} size={blockSize} color={col} />
                     )}
-                  </>
+                  </Fragment>
                 ))
             )}
           </div>

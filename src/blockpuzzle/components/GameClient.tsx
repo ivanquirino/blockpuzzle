@@ -6,6 +6,7 @@ import GameInfo from "./GameInfo";
 import { useGameStore } from "../store";
 import { useLayoutEffect, useRef, useState } from "react";
 import { baseWidth, baseHeight, baseSize } from "../constants";
+import Music from "./Music";
 
 function GameClient() {
   const isReady = useGameStore((state) => state.status !== "loading");
@@ -33,6 +34,7 @@ function GameClient() {
       {isReady && <GameInfo blockSize={blockSize} />}
       <Game ref={gridRef} width={width} height={height} blockSize={blockSize} />
       {isReady && <Controls />}{" "}
+      <Music />
     </>
   );
 }
