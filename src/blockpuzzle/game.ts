@@ -76,12 +76,14 @@ export const spawn = (state: State) => {
     const current = pieces[currentPieceId];
 
     return {
-      current, currentPieceId, spawnBag: rest
-    }
+      current,
+      currentPieceId,
+      spawnBag: rest,
+    };
   }
 
   return state;
-}
+};
 
 const getGridCell = (row: number, col: number, grid: Grid) => {
   if (grid[row] && grid[row][col]) {
@@ -407,36 +409,24 @@ export const moveCurrentPiece = (input: KeyboardInput) => (state: State) => {
   const grid = state.grid;
 
   if (current) {
+    let next;
+
     if (input.left) {
-      const next = moveLeft(current);
-
-      // don't move if there's a block on that position
-      if (isPieceBlocked(next, grid)) return state;
-
-      // don't move past the left limit
-      if (getMinX(next) >= 0) {
-        return { current: next };
-      }
+      next = moveLeft(current);
     }
 
     if (input.right) {
-      const next = moveRight(current);
-
-      if (isPieceBlocked(next, grid)) return state;
-
-      // don't move past the right limit
-      if (getMaxX(next) <= COLS - 1) {
-        return { current: next };
-      }
+      next = moveRight(current);
     }
 
     if (input.down) {
-      const next = moveDown(current);
+      next = moveDown(current);
+    }
 
-      if (isPieceBlocked(next, grid)) return state;
+    if (next) {
+      const { blocks, left, right, down } = getCollisions(next, grid);
 
-      // don't move below the bottom limit
-      if (getMaxY(next) <= ROWS - 1) {
+      if (!blocks.length && !left.length && !right.length && !down.length) {
         return { current: next };
       }
     }
@@ -466,9 +456,8 @@ export const generateRandomPieceSet = () => {
   return set;
 };
 
-
 export const isGameOver = (state: State) => {
-  if (state.grid[1].some(cell => cell)) return true;
+  if (state.grid[1].some((cell) => cell)) return true;
 
   return false;
-}
+};
