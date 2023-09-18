@@ -261,8 +261,9 @@ export const rotateClockwise = (state: State) => {
       moved = moveUp(moved, getMaxY(down) - (ROWS - 1));
     }
 
-    if (isPieceBlocked(moved, state.grid)) return state;
-    return { current: moved };
+    if (!isPieceBlocked(moved, state.grid)) {
+      return { current: moved };
+    }
   }
 
   return state;
@@ -386,12 +387,8 @@ export function fallCurrentPiece(state: State) {
   if (current) {
     const next = moveDown(current);
 
-    // there's a block, can't fall
-    if (isPieceBlocked(next, state.grid)) {
-      return state;
-    }
     // if there's space to fall
-    if (getMaxY(next) <= ROWS - 1) {
+    if (!isPieceBlocked(next, state.grid) && getMaxY(next) <= ROWS - 1) {
       return { current: next };
     }
   }
