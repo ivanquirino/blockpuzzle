@@ -16,7 +16,7 @@ const GameInfo = ({ blockSize }: GameInfoProps) => {
   const nextPiece = pieces[next] ?? [];
 
   return (
-    <div className="">
+    <div className="w-[200px]">
       <div className="mb-8">SCORE: {score}</div>
       <div className="mb-8">
         <div className="mb-4">CURRENT</div>
