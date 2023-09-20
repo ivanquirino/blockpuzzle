@@ -1,5 +1,5 @@
 import { State } from "./store";
-import { scorePerRow, ROWS, COLS } from "./constants";
+import { scorePerRow, ROWS, COLS, initialTimeStep } from "./constants";
 import { KeyboardInput, CurrentPiece, Grid, PieceId } from "./types";
 
 export const pieceO = [
@@ -369,7 +369,7 @@ export function clearCompleteRows(state: State) {
 
     return {
       grid: newGrid,
-      score: state.score + scorePerRow * fullRows.length,
+      score: state.score + scorePerRow * fullRows.length * fullRows. length,
     };
   }
 
@@ -457,4 +457,32 @@ export const isGameOver = (state: State) => {
   if (state.grid[1].some((cell) => cell)) return true;
 
   return false;
+};
+
+export const getScoreForNextLevel = (level = 1) => {
+  let sum = 0;
+
+  for (let i = 0; i <= level; i++) {
+    sum = i * 1000 + sum;
+  }
+
+  return sum;
+};
+
+export const updateLevel = (state: State) => {
+  const { score, level } = state;
+
+  if (score >= getScoreForNextLevel(level)) {
+    return { level: level + 1 };
+  }
+
+  return state;
+};
+
+export const getTimeStep = (score: number) => {
+  if (score > 1000) {
+    const lvl = score;
+  }
+
+  return initialTimeStep;
 };

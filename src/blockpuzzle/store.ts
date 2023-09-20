@@ -12,11 +12,13 @@ import {
   rotateClockwise,
   generateRandomPieceSet,
   isGameOver,
+  updateLevel,
 } from "./game";
 
 export interface State {
   status: "loading" | "idle" | "started" | "paused" | "gameover";
   score: number;
+  level: number;
   grid: Grid;
   current: CurrentPiece | null;
   currentPieceId: PieceId | null;
@@ -36,11 +38,14 @@ export interface Actions {
 const getInitialState = (): State => ({
   status: "loading",
   score: 0,
+  level: 1,
   grid: createGrid(),
   current: null,
   currentPieceId: null,
   spawnBag: [],
 });
+
+const timeout = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const store: StateCreator<State & Actions> = (set, get) => {
   let interval: any;
@@ -89,16 +94,19 @@ const store: StateCreator<State & Actions> = (set, get) => {
       get().move(input);
     },
 
-    start: () => {
+    start: async () => {
       set({ status: "started" });
 
       generatePieceSet();
       set(spawn);
       // game loop
-      interval = setInterval(() => {
+
+      while (get().status === "started") {
         set(placeCurrentBlock);
 
         set(clearCompleteRows);
+
+        set(updateLevel)
 
         if (isGameOver(get())) {
           set({ status: "gameover" });
@@ -111,7 +119,13 @@ const store: StateCreator<State & Actions> = (set, get) => {
         set(spawn);
 
         generatePieceSet();
-      }, 1000);
+
+        const level = get().level;
+        let timeStep = 1000 - ((level -1) * 100);
+        if (timeStep < 100) timeStep = 100;
+
+        await timeout(timeStep);
+      }
     },
     move: (input) => {
       if (get().status !== "started") return;
@@ -120,7 +134,7 @@ const store: StateCreator<State & Actions> = (set, get) => {
     },
     rotateClockwise: () => {
       if (get().status !== "started") return;
-            
+
       set(rotateClockwise);
     },
     pause: () => {

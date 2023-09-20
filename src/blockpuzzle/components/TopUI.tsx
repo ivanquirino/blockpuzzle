@@ -43,14 +43,16 @@ export const PieceDisplay = ({
 
 const TopUI = () => {
   const score = useGameStore((state) => state.score);
+  const level = useGameStore(state => state.level)
   const next = useGameStore((state) => state.spawnBag[0]);
-  const nextPiece = pieces[next] ?? [];
   const input = useGameStore((state) => state.input);
+
+  const nextPiece = pieces[next] ?? [];
 
   return (
     <div className="my-2 flex justify-between items-center">
       <div>SCORE {score}</div>
-      <div>LV 1</div>
+      <div>LV {level}</div>
       <div className="flex items-center">        
         <div className="relative w-[64px] h-[32px]">
           {nextPiece.length > 0 && (
