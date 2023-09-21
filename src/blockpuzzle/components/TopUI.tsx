@@ -62,7 +62,7 @@ const TopUI = () => {
       </div>
       <button
         className="rounded border-white border-[1px] px-1 active:bg-white active:text-black transition select-none"
-        onClick={() => input({ ...idleInput, enter: true })}
+        onClick={() => input({ ...idleInput, start: true })}
       >
         MENU
       </button>

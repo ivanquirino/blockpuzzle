@@ -1,8 +1,8 @@
-export interface KeyboardInput {
+export interface GameInput {
   left: boolean;
   right: boolean;
   down: boolean;
-  enter: boolean;
+  start: boolean;
   up: boolean;
 }
 

@@ -1,10 +1,10 @@
 /**
  * Input and Rendering
  */
-import { Fragment, forwardRef, useEffect } from "react";
+import { Fragment, forwardRef } from "react";
 import { useGameStore } from "./GameClient";
 import UnitBlock from "./UnitBlock";
-import { acceptedKeys, idleInput } from "../constants";
+import { idleInput } from "../constants";
 import Status from "./Status";
 import GridBlock from "./GridBlock";
 import Gamepad from "./Gamepad";
@@ -27,42 +27,8 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
 
   const isReady = useGameStore((state) => state.status !== "loading");
 
-  useEffect(() => {
-    const keyboardHandler = (event: KeyboardEvent) => {
-      if (!acceptedKeys.includes(event.key)) {
-        return;
-      }
-
-      const inputObj = { ...idleInput };
-
-      if (event.key === "ArrowDown") {
-        inputObj.down = true;
-      }
-      if (event.key === "ArrowLeft") {
-        inputObj.left = true;
-      }
-      if (event.key === "ArrowRight") {
-        inputObj.right = true;
-      }
-      if (event.key === "Enter") {
-        inputObj.enter = true;
-      }
-
-      if (event.key === "ArrowUp") {
-        inputObj.up = true;
-      }
-
-      input(inputObj);
-    };
-    window.addEventListener("keydown", keyboardHandler);
-
-    return () => {
-      window.removeEventListener("keydown", keyboardHandler);
-    };
-  }, [input]);
-
   const handleBoardClick = () => {
-    input({ ...idleInput, enter: true });
+    input({ ...idleInput, start: true });
   };
 
   return (

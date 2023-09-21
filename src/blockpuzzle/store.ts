@@ -2,7 +2,7 @@ import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { useStore, StateCreator } from "zustand";
 import {
-  KeyboardInput,
+  GameInput,
   CurrentPiece,
   Grid,
   PieceId,
@@ -32,10 +32,10 @@ export interface State {
 }
 
 export interface Actions {
-  input: (input: KeyboardInput) => void;
+  input: (input: GameInput) => void;
   start: () => void;
   pause: () => void;
-  move: (input: KeyboardInput) => void;
+  move: (input: GameInput) => void;
   reset: () => void;
   rotateClockwise: () => void;
   ready: () => void;
@@ -82,19 +82,19 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
 
         if (status === "loading") return;
 
-        if (input.enter && status === "idle") {
+        if (input.start && status === "idle") {
           get().start();
         }
-        if (input.enter && status === "started") {
+        if (input.start && status === "started") {
           get().pause();
         }
-        if (input.enter && status === "paused") {
+        if (input.start && status === "paused") {
           get().start();
         }
-        if (input.enter && status === "gameover") {
+        if (input.start && status === "gameover") {
           get().reset();
         }
-        if (input.enter) return;
+        if (input.start) return;
 
         if (input.up) get().rotateClockwise();
 

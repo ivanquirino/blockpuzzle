@@ -1,6 +1,6 @@
 import { State } from "./store";
 import { scorePerRow, ROWS, COLS, initialTimeStep } from "./constants";
-import { KeyboardInput, CurrentPiece, Grid, PieceId } from "./types";
+import { GameInput, CurrentPiece, Grid, PieceId } from "./types";
 
 export const pieceO = [
   { x: 4, y: 0 },
@@ -401,7 +401,7 @@ export function fallCurrentPiece(state: State) {
  * @param input keyboard input
  * @returns
  */
-export const moveCurrentPiece = (input: KeyboardInput) => (state: State) => {
+export const moveCurrentPiece = (input: GameInput) => (state: State) => {
   const current = state.current;
   const grid = state.grid;
 

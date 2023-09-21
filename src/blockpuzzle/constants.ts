@@ -1,4 +1,4 @@
-import { KeyboardInput } from "./types";
+import { GameInput } from "./types";
 
 export const ROWS = 22;
 export const COLS = 10;
@@ -7,11 +7,11 @@ export const baseSize = 4;
 export const baseWidth = baseSize * COLS;
 export const baseHeight = baseSize * (ROWS - 2);
 
-export const idleInput: KeyboardInput = {
+export const idleInput: GameInput = {
   left: false,
   right: false,
   down: false,
-  enter: false,
+  start: false,
   up: false
 };
 

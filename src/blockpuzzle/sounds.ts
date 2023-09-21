@@ -33,10 +33,7 @@ export const initSounds = () => {
   const fallTrack = context.createMediaElementSource(fall);
   fallTrack.connect(context.destination);
 
-  const music = new Audio(
-    "korobeiniki.ogg"
-    // "https://raw.githubusercontent.com/ivanquirino/blockpuzzle/main/public/korobeiniki.ogg"
-  );
+  const music = new Audio("korobeiniki.ogg");
   music.volume = 0.3;
   music.loop = true;
   const musicTrack = context.createMediaElementSource(music);
