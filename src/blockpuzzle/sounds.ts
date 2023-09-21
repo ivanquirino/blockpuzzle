@@ -5,15 +5,15 @@ export const initSounds = () => {
 
   const context = new AudioContext();
 
-  const rotate = new Audio("/rotate.ogg");
+  const rotate = new Audio("rotate.ogg");
   const rotateTrack = context.createMediaElementSource(rotate);
   rotateTrack.connect(context.destination);
 
-  const move = new Audio("/move.wav");
+  const move = new Audio("move.wav");
   const moveTrack = context.createMediaElementSource(move);
   moveTrack.connect(context.destination);
 
-  const single = new Audio("/single.ogg");
+  const single = new Audio("single.ogg");
   const singleTrack = context.createMediaElementSource(single);
   singleTrack.connect(context.destination);
 
@@ -22,15 +22,14 @@ export const initSounds = () => {
   lvupTrack.connect(context.destination);
 
   const gameover = new Audio("tetris.ogg");
-  gameover.load();
   const gameoverTrack = context.createMediaElementSource(gameover);
   gameoverTrack.connect(context.destination);
 
-  const landing = new Audio("/landing.ogg");
+  const landing = new Audio("landing.ogg");
   const landingTrack = context.createMediaElementSource(landing);
   landingTrack.connect(context.destination);
 
-  const fall = new Audio("/bfall.ogg");
+  const fall = new Audio("bfall.ogg");
   const fallTrack = context.createMediaElementSource(fall);
   fallTrack.connect(context.destination);
 
