@@ -50,8 +50,6 @@ const getInitialState = (): State => ({
 
 const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
   (callbacks) => (set, get) => {
-    let interval: any;
-
     // this function has the random generator sideEffect
     // and can't be written as a function of state and input
     const generatePieceSet = () => {
@@ -101,12 +99,10 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         if (input.start) return;
 
         if (input.up) {
-          // get().rotateClockwise();
           limitedRotate();
         }
         if (input.down) limitedDrop();
 
-        // get().move(input);
         limitedMove(input);
       },
       start: async () => {
@@ -138,7 +134,6 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
 
           if (isGameOver(get())) {
             set({ status: "gameover" });
-            clearInterval(interval);
             callbacks.onGameOver();
             return;
           }
@@ -185,7 +180,6 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         if (get().status !== "started") return;
 
         set({ status: "paused" });
-        clearInterval(interval);
         callbacks.onPause();
       },
       reset: () => {
