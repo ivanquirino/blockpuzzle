@@ -1,4 +1,5 @@
-import { State, useGameStore } from "../store";
+import { State } from "../store";
+import { useGameStore } from "./GameClient";
 
 const statusText: Partial<Record<State["status"], string>> = {
   idle: "Press enter or tap to start",

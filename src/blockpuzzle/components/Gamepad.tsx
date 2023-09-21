@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { idleInput } from "../constants";
-import { useGameStore } from "../store";
+import { useGameStore } from "./GameClient";
 import { KeyboardInput } from "../types";
 
 const buttonStyle =
@@ -70,7 +70,7 @@ const Gamepad = () => {
   }, [input]);
 
   const handleClick = (inputObj: KeyboardInput) => () => {
-    input(inputObj);
+    input(inputObj)
   };
 
   const leftClick = handleClick({ ...idleInput, left: true });

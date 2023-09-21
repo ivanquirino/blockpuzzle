@@ -2,7 +2,7 @@
  * Input and Rendering
  */
 import { Fragment, forwardRef, useEffect } from "react";
-import { useGameStore } from "../store";
+import { useGameStore } from "./GameClient";
 import UnitBlock from "./UnitBlock";
 import { acceptedKeys, idleInput } from "../constants";
 import Status from "./Status";

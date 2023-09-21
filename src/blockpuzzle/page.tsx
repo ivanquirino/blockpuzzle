@@ -1,5 +1,8 @@
 import { Metadata } from "next";
+// import dynamic from "next/dynamic";
 import GameClient from "./components/GameClient";
+
+// const GameClient = dynamic(() => import("./components/GameClient"), { ssr: false })
 
 function Page() {
   return (

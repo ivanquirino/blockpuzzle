@@ -19,4 +19,14 @@ export type CurrentPiece = { x: number; y: number }[];
 
 export type Grid = (PieceId | null)[][];
 
-
+export type GameCallbacks = {
+  onGameOver: () => void;
+  onMove: () => void;
+  onRotate: () => void;
+  onClear: () => void;
+  onLevelUp: () => void;
+  onLanding: () => void;
+  onFall: () => void;
+  onStart: () => void;
+  onPause: () => void;
+};

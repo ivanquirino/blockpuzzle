@@ -1,6 +1,6 @@
 import { idleInput } from "../constants";
 import { pieces } from "../game";
-import { useGameStore } from "../store";
+import { useGameStore } from "./GameClient";
 import { CurrentPiece, PieceId } from "../types";
 import UnitBlock from "./UnitBlock";
 

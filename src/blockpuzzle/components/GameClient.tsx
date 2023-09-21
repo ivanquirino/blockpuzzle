@@ -1,11 +1,13 @@
 "use client";
 
 import Game from "./Game";
-import { useGameStore } from "../store";
+import { storeFactory } from "../store";
 import { useLayoutEffect, useRef, useState } from "react";
 import { baseWidth, baseHeight, baseSize } from "../constants";
-import Music from "./Music";
 import TopUI from "./TopUI";
+import callbacks from "../webCallbacks";
+
+export const { useGameStore } = storeFactory(callbacks());
 
 function GameClient() {  
   const gridRef = useRef<HTMLDivElement>(null);
@@ -30,7 +32,6 @@ function GameClient() {
     <div>
       <TopUI />
       <Game ref={gridRef} width={width} height={height} blockSize={blockSize} />
-      <Music />
     </div>
   );
 }
