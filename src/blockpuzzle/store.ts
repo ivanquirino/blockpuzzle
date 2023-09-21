@@ -1,13 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { useStore, StateCreator } from "zustand";
-import {
-  GameInput,
-  CurrentPiece,
-  Grid,
-  PieceId,
-  GameCallbacks,
-} from "./types";
+import { GameInput, CurrentPiece, Grid, PieceId, GameCallbacks } from "./types";
 import {
   placeCurrentBlock,
   spawn,
@@ -21,6 +15,7 @@ import {
   updateLevel,
 } from "./game";
 import { timeout } from "./tools";
+import throttle from "lodash.throttle";
 
 export interface State {
   status: "loading" | "idle" | "started" | "paused" | "gameover";
@@ -40,6 +35,7 @@ export interface Actions {
   reset: () => void;
   rotateClockwise: () => void;
   ready: () => void;
+  drop: () => void;
 }
 
 const getInitialState = (): State => ({
@@ -73,6 +69,15 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
       return spawnBag;
     };
 
+    const limitedMove = throttle((input: GameInput) => get().move(input), 100, {
+      leading: true,
+    });
+
+    const limitedDrop = throttle(() => get().drop(), 50, { leading: true });
+    const limitedRotate = throttle(() => get().rotateClockwise(), 150, {
+      leading: true,
+    });
+
     return {
       ...getInitialState(),
 
@@ -95,11 +100,15 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         }
         if (input.start) return;
 
-        if (input.up) get().rotateClockwise();
+        if (input.up) {
+          // get().rotateClockwise();
+          limitedRotate();
+        }
+        if (input.down) limitedDrop();
 
-        get().move(input);
+        // get().move(input);
+        limitedMove(input);
       },
-
       start: async () => {
         set({ status: "started" });
         callbacks.onStart();
@@ -156,6 +165,11 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         if ((input.left || input.right) && prev != get().current) {
           callbacks.onMove();
         }
+      },
+      drop: () => {
+        if (get().status !== "started") return;
+
+        set(fallCurrentPiece);
       },
       rotateClockwise: () => {
         if (get().status !== "started") return;

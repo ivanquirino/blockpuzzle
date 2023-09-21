@@ -6,10 +6,11 @@ import { clearInterval } from "timers";
 import { timeout } from "../tools";
 
 const buttonStyle =
-  "border-white border-[1px] rounded aspect-square text-center align-middle w-[64px] first:mr-3 flex justify-center items-center text-[32px] active:bg-white active:text-black transition select-none";
+  "border-white border-[1px] rounded aspect-square text-center align-middle w-[64px] first:mr-3 flex justify-center items-center text-[32px] active:bg-white active:text-black select-none";
 
 const isMobile = () => {
   return navigator.userAgent.match(/mobile|iphone|android|ipad/i);
+  500;
 };
 
 const Gamepad = () => {
@@ -59,14 +60,12 @@ const Gamepad = () => {
 
       return {
         start: async (inputObj: GameInput) => {
-          const time = inputObj.down ? 50 : 100;
-
           isPressed = true;
 
           while (isPressed) {
             input(inputObj);
 
-            await timeout(time);
+            await timeout(33);
           }
         },
         end: () => {
@@ -85,12 +84,10 @@ const Gamepad = () => {
 
     leftC?.addEventListener("touchstart", left);
     rightC?.addEventListener("touchstart", right);
-    upC?.addEventListener("touchstart", up);
     downC?.addEventListener("touchstart", down);
 
     leftC?.addEventListener("touchend", limiter.end);
     rightC?.addEventListener("touchend", limiter.end);
-    upC?.addEventListener("touchend", limiter.end);
     downC?.addEventListener("touchend", limiter.end);
 
     return () => {
@@ -98,17 +95,19 @@ const Gamepad = () => {
 
       leftC?.removeEventListener("touchstart", left);
       rightC?.removeEventListener("touchstart", right);
-      upC?.removeEventListener("touchstart", up);
       downC?.removeEventListener("touchstart", down);
 
       leftC?.removeEventListener("touchend", limiter.end);
       rightC?.removeEventListener("touchend", limiter.end);
-      upC?.removeEventListener("touchend", limiter.end);
       downC?.removeEventListener("touchend", limiter.end);
     };
   }, [input]);
 
   const handleClick = (inputObj: GameInput) => () => {
+    if (isMobile() && inputObj.up) {
+      input(inputObj);
+    }
+
     if (isMobile()) return;
 
     input(inputObj);

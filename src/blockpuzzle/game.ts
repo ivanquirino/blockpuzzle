@@ -416,10 +416,6 @@ export const moveCurrentPiece = (input: GameInput) => (state: State) => {
       next = moveRight(current);
     }
 
-    if (input.down) {
-      next = moveDown(current);
-    }
-
     if (next) {
       const { blocks, left, right, down } = getCollisions(next, grid);
 
