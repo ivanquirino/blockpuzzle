@@ -20,6 +20,7 @@ import {
   isGameOver,
   updateLevel,
 } from "./game";
+import { timeout } from "./tools";
 
 export interface State {
   status: "loading" | "idle" | "started" | "paused" | "gameover";
@@ -50,8 +51,6 @@ const getInitialState = (): State => ({
   currentPieceId: null,
   spawnBag: [],
 });
-
-const timeout = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
   (callbacks) => (set, get) => {

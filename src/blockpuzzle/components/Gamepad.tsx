@@ -3,6 +3,7 @@ import { acceptedKeys, idleInput } from "../constants";
 import { useGameStore } from "./GameClient";
 import { GameInput } from "../types";
 import { clearInterval } from "timers";
+import { timeout } from "../tools";
 
 const buttonStyle =
   "border-white border-[1px] rounded aspect-square text-center align-middle w-[64px] first:mr-3 flex justify-center items-center text-[32px] active:bg-white active:text-black transition select-none";
@@ -20,40 +21,6 @@ const Gamepad = () => {
   const input = useGameStore((state) => state.input);
 
   useEffect(() => {
-    const leftC = leftRef?.current;
-    const rightC = rightRef?.current;
-    const upC = upRef?.current;
-    const downC = downRef?.current;
-
-    const handler = (inputObj: GameInput) => {
-      let interval: any;
-
-      return {
-        start: () => {
-          clearInterval(interval);
-          interval = setInterval(() => input(inputObj), 100);
-        },
-        end: () => {
-          clearInterval(interval);
-        },
-      };
-    };
-
-    const left = handler({ ...idleInput, left: true });
-    const right = handler({ ...idleInput, right: true });
-    const up = handler({ ...idleInput, up: true });
-    const down = handler({ ...idleInput, down: true });
-
-    leftC?.addEventListener("touchstart", left.start);
-    rightC?.addEventListener("touchstart", right.start);
-    upC?.addEventListener("touchstart", up.start);
-    downC?.addEventListener("touchstart", down.start);
-
-    leftC?.addEventListener("touchend", left.end);
-    rightC?.addEventListener("touchend", right.end);
-    upC?.addEventListener("touchend", up.end);
-    downC?.addEventListener("touchend", down.end);
-
     const handleKeyboardDown = (event: KeyboardEvent) => {
       if (!acceptedKeys.includes(event.key)) {
         return;
@@ -82,22 +49,68 @@ const Gamepad = () => {
 
     window.addEventListener("keydown", handleKeyboardDown);
 
+    const leftC = leftRef?.current;
+    const rightC = rightRef?.current;
+    const upC = upRef?.current;
+    const downC = downRef?.current;
+
+    const inputLimiter = () => {
+      let isPressed = false;
+
+      return {
+        start: async (inputObj: GameInput) => {
+          const time = inputObj.down ? 50 : 100;
+
+          isPressed = true;
+
+          while (isPressed) {
+            input(inputObj);
+
+            await timeout(time);
+          }
+        },
+        end: () => {
+          isPressed = false;
+          input(idleInput);
+        },
+      };
+    };
+
+    const limiter = inputLimiter();
+
+    const left = () => limiter.start({ ...idleInput, left: true });
+    const right = () => limiter.start({ ...idleInput, right: true });
+    const up = () => limiter.start({ ...idleInput, up: true });
+    const down = () => limiter.start({ ...idleInput, down: true });
+
+    leftC?.addEventListener("touchstart", left);
+    rightC?.addEventListener("touchstart", right);
+    upC?.addEventListener("touchstart", up);
+    downC?.addEventListener("touchstart", down);
+
+    leftC?.addEventListener("touchend", limiter.end);
+    rightC?.addEventListener("touchend", limiter.end);
+    upC?.addEventListener("touchend", limiter.end);
+    downC?.addEventListener("touchend", limiter.end);
+
     return () => {
-      leftC?.removeEventListener("touchstart", left.start);
-      rightC?.removeEventListener("touchstart", right.start);
-      upC?.removeEventListener("touchstart", up.start);
-      downC?.removeEventListener("touchstart", down.start);
-
-      leftC?.removeEventListener("touchend", left.end);
-      rightC?.removeEventListener("touchend", right.end);
-      upC?.removeEventListener("touchend", up.end);
-      downC?.removeEventListener("touchend", down.end);
-
       window.removeEventListener("keydown", handleKeyboardDown);
+
+      leftC?.removeEventListener("touchstart", left);
+      rightC?.removeEventListener("touchstart", right);
+      upC?.removeEventListener("touchstart", up);
+      downC?.removeEventListener("touchstart", down);
+
+      leftC?.removeEventListener("touchend", limiter.end);
+      rightC?.removeEventListener("touchend", limiter.end);
+      upC?.removeEventListener("touchend", limiter.end);
+      downC?.removeEventListener("touchend", limiter.end);
     };
   }, [input]);
 
   const handleClick = (inputObj: GameInput) => () => {
+    if (isMobile()) return;
+
     input(inputObj);
   };
 
