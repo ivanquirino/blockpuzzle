@@ -70,10 +70,10 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
                   </Fragment>
                 ))
             )}
+            <Gamepad />
           </div>
         )}
       </div>
-      <Gamepad />
     </>
   );
 });

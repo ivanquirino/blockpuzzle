@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useRef } from "react";
+import { MouseEvent, useEffect, useRef } from "react";
 import { acceptedKeys, idleInput } from "../constants";
 import { useGameStore } from "./GameClient";
 import { GameInput } from "../types";
-import { clearInterval } from "timers";
+import ArrowIcon from "./ArrowIcon"
 import { timeout } from "../tools";
+import RotateIcon from "./RotateIcon";
+import React from "react";
 
 const buttonStyle =
-  "border-white border-[1px] rounded aspect-square text-center align-middle w-[64px] first:mr-3 flex justify-center items-center text-[32px] active:bg-white active:text-black select-none";
+  "border-white border-[1px] rounded aspect-square text-center align-middle w-[64px] first:mr-3 flex justify-center items-center text-[32px] active:bg-white active:text-black select-none group";
 
 const isMobile = () => {
   return navigator.userAgent.match(/mobile|iphone|android|ipad/i);
@@ -64,7 +66,7 @@ const Gamepad = () => {
           while (isPressed) {
             input(inputObj);
 
-            await timeout(33);
+            await timeout(16);
           }
         },
         end: () => {
@@ -102,7 +104,9 @@ const Gamepad = () => {
     };
   }, [input]);
 
-  const handleClick = (inputObj: GameInput) => () => {
+  const handleClick = (inputObj: GameInput) => (event: MouseEvent) => {
+    event.stopPropagation();
+
     if (isMobile() && inputObj.up) {
       input(inputObj);
     }
@@ -118,25 +122,25 @@ const Gamepad = () => {
   const downClick = handleClick({ ...idleInput, down: true });
 
   return (
-    <div className="flex justify-between w-full mt-2">
+    <div className="flex justify-between w-full mt-2 absolute -bottom-[80px]">
       <div className="flex">
         <button ref={leftRef} className={buttonStyle} onClick={leftClick}>
-          &lsaquo;
+          <ArrowIcon className="rotate-90"/>
         </button>
         <button ref={rightRef} className={buttonStyle} onClick={rightClick}>
-          &rsaquo;
+          <ArrowIcon className="-rotate-90" />
         </button>
       </div>
       <div className="flex">
         <button ref={upRef} className={buttonStyle} onClick={upClick}>
-          &#x27F3;
+          <RotateIcon />
         </button>
         <button ref={downRef} className={buttonStyle} onClick={downClick}>
-          &#x2304;
+          <ArrowIcon />
         </button>
       </div>
     </div>
   );
 };
 
-export default Gamepad;
+export default React.memo(Gamepad);

@@ -369,7 +369,7 @@ export function clearCompleteRows(state: State) {
 
     return {
       grid: newGrid,
-      score: state.score + scorePerRow * fullRows.length * fullRows. length,
+      score: state.score + state.level * scorePerRow * fullRows.length * fullRows.length,
     };
   }
 
