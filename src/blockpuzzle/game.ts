@@ -93,14 +93,14 @@ const getGridCell = (row: number, col: number, grid: Grid) => {
   return null;
 };
 
-const moveDown = (piece: CurrentPiece) => {
+export const moveDown = (piece: CurrentPiece) => {
   return piece.map((pos) => {
     const y = pos.y + 1;
     return { ...pos, y };
   });
 };
 
-const isPieceBlocked = (piece: CurrentPiece, grid: Grid) => {
+export const isPieceBlocked = (piece: CurrentPiece, grid: Grid) => {
   return piece.some((pos) => getGridCell(pos.y, pos.x, grid));
 };
 
@@ -132,7 +132,7 @@ const getCollisions = (piece: CurrentPiece, grid: Grid) => {
   return collisions;
 };
 
-const getMaxY = (piece: CurrentPiece) => {
+export const getMaxY = (piece: CurrentPiece) => {
   return piece.reduce((max, pos) => {
     if (pos.y > max) return pos.y;
     return max;

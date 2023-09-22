@@ -13,9 +13,13 @@ import {
   generateRandomPieceSet,
   isGameOver,
   updateLevel,
+  getMaxY,
+  isPieceBlocked,
+  moveDown,
 } from "./game";
 import { timeout } from "./tools";
 import throttle from "lodash.throttle";
+import { ROWS } from "./constants";
 
 export interface State {
   status: "loading" | "idle" | "started" | "paused" | "gameover";
@@ -36,6 +40,7 @@ export interface Actions {
   rotateClockwise: () => void;
   ready: () => void;
   drop: () => void;
+  update: (drop: boolean) => void;
 }
 
 const getInitialState = (): State => ({
@@ -105,44 +110,54 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
 
         limitedMove(input);
       },
+      update: (drop = false) => {
+        // place
+        let prevGrid = get().grid;
+        set(placeCurrentBlock);
+        if (prevGrid !== get().grid) {
+          if (drop) {
+            callbacks.onFall();
+          } else {
+            callbacks.onLanding();
+          }
+        }
+
+        //clear
+        prevGrid = get().grid;
+        set(clearCompleteRows);
+        if (prevGrid !== get().grid) {
+          callbacks.onClear();
+        }
+
+        //update level
+        let prevLvl = get().level;
+        set(updateLevel);
+        if (prevLvl !== get().level) {
+          callbacks.onLevelUp();
+        }
+
+        //check game over
+        if (isGameOver(get())) {
+          set({ status: "gameover" });
+          callbacks.onGameOver();
+          return;
+        }
+
+        set(spawn);
+
+        generatePieceSet();
+      },
       start: async () => {
         set({ status: "started" });
         callbacks.onStart();
 
         generatePieceSet();
         set(spawn);
-        // game loop
 
+        // time loop
         while (get().status === "started") {
-          let prevGrid = get().grid;
-          set(placeCurrentBlock);
-          if (prevGrid !== get().grid) {
-            callbacks.onLanding();
-          }
-
-          prevGrid = get().grid;
-          set(clearCompleteRows);
-          if (prevGrid !== get().grid) {
-            callbacks.onClear();
-          }
-
-          let prevLvl = get().level;
-          set(updateLevel);
-          if (prevLvl !== get().level) {
-            callbacks.onLevelUp();
-          }
-
-          if (isGameOver(get())) {
-            set({ status: "gameover" });
-            callbacks.onGameOver();
-            return;
-          }
-
+          get().update(false);
           set(fallCurrentPiece);
-
-          set(spawn);
-
-          generatePieceSet();
 
           const level = get().level;
           let timeStep = 1000 - (level - 1) * 100;
@@ -164,7 +179,19 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
       drop: () => {
         if (get().status !== "started") return;
 
-        set(fallCurrentPiece);
+        const current = get().current;
+
+        if (current) {
+          const next = moveDown(current);
+
+          // if there's space to fall
+          if (!isPieceBlocked(next, get().grid) && getMaxY(next) <= ROWS - 1) {
+            set({ current: next });
+            return;
+          }
+
+          get().update(true);
+        }
       },
       rotateClockwise: () => {
         if (get().status !== "started") return;

@@ -6,6 +6,8 @@ const callbacks = () => {
   return {
     onGameOver: () => {
       sounds?.gameOver();
+      sounds?.music.pause();
+      sounds?.music.reset()
     },
     onMove: () => {
       sounds?.move();
