@@ -10,7 +10,6 @@ const buttonStyle =
 
 const isMobile = () => {
   return navigator.userAgent.match(/mobile|iphone|android|ipad/i);
-  500;
 };
 
 const Gamepad = () => {
