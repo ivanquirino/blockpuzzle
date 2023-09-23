@@ -140,7 +140,6 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         }
 
         set(spawn);
-
         generatePieceSet();
       },
       start: async () => {

@@ -1,3 +1,4 @@
+import React from "react";
 import { Block } from "../types";
 import styles from "./UnitBlock.module.css";
 import { css } from "@stitches/react";
@@ -29,7 +30,7 @@ function UnitBlock(props: Block) {
   aspect-square 
   absolute 
   unit-block 
-  z-40 
+  z-40
   ${styles.unitBlock} 
   ${colors[color]}
   ${blockStyle}`;
@@ -38,3 +39,5 @@ function UnitBlock(props: Block) {
 }
 
 export default UnitBlock;
+
+export const GridUnitBlock = React.memo(UnitBlock);

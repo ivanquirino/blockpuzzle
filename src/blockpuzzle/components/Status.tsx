@@ -1,3 +1,4 @@
+import React from "react";
 import { State } from "../store";
 import { useGameStore } from "./GameClient";
 
@@ -17,4 +18,4 @@ const Status = () => {
   return <h3 className="uppercase text-center z-50">{status}</h3>;
 };
 
-export default Status;
+export default React.memo(Status);

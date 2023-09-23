@@ -3,7 +3,7 @@
  */
 import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { useGameStore } from "./GameClient";
-import UnitBlock from "./UnitBlock";
+import UnitBlock, { GridUnitBlock } from "./UnitBlock";
 import { baseHeight, baseSize, baseWidth, idleInput } from "../constants";
 import Status from "./Status";
 import GridBlock from "./GridBlock";
@@ -75,7 +75,7 @@ function Game() {
                   <Fragment key={`${y}${x}`}>
                     <GridBlock x={x} y={y - 2} size={blockSize} />
                     {col && (
-                      <UnitBlock x={x} y={y - 2} size={blockSize} color={col} />
+                      <GridUnitBlock x={x} y={y - 2} size={blockSize} color={col} />
                     )}
                   </Fragment>
                 ))
