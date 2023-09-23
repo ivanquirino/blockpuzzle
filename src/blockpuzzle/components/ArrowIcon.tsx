@@ -1,13 +1,13 @@
-import classNames from "classnames";
-
 interface IconProps {
   className?: string;
 }
 
 const ArrowIcon = ({ className }: IconProps) => {
+  const classes = `h-[32px] w-[32px] text-white group-active:text-black ${className}`;
+
   return (
     <svg
-      className={classNames("h-[32px] w-[32px] text-white group-active:text-black", className)}
+      className={classes}
       fill="currentColor"
       version="1.1"
       id="Layer_1"
@@ -20,4 +20,4 @@ const ArrowIcon = ({ className }: IconProps) => {
   );
 };
 
-export default ArrowIcon
+export default ArrowIcon;

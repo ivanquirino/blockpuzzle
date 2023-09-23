@@ -1,6 +1,6 @@
-import classNames from "classnames";
 import { Block } from "../types";
 import styles from "./UnitBlock.module.css";
+import { css } from "@stitches/react";
 
 const colors = [
   "null",
@@ -16,24 +16,25 @@ const colors = [
 function UnitBlock(props: Block) {
   const { x, y, size, color } = props;
 
-  const classes = classNames(
-    "bg-white rounded aspect-square absolute unit-block z-40",
-    styles.unitBlock,
-    colors[color]
-  );
+  const blockStyle = css({
+    left: x * size,
+    top: y * size,
+    width: size,
+    height: size,
+    borderWidth: size / 4,
+  });
 
-  return (
-    <div
-      style={{
-        left: x * size,
-        top: y * size,
-        width: size,
-        height: size,
-        borderWidth: size / 4
-      }}
-      className={classes}
-    />
-  );
+  const classes = `bg-white 
+  rounded 
+  aspect-square 
+  absolute 
+  unit-block 
+  z-40 
+  ${styles.unitBlock} 
+  ${colors[color]}
+  ${blockStyle}`;
+
+  return <div className={classes} />;
 }
 
 export default UnitBlock;

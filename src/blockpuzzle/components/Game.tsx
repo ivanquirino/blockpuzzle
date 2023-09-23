@@ -1,48 +1,58 @@
 /**
  * Input and Rendering
  */
-import { Fragment, forwardRef } from "react";
+import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { useGameStore } from "./GameClient";
 import UnitBlock from "./UnitBlock";
-import { idleInput } from "../constants";
+import { baseHeight, baseSize, baseWidth, idleInput } from "../constants";
 import Status from "./Status";
 import GridBlock from "./GridBlock";
 import Gamepad from "./Gamepad";
-7;
+import { css } from "@stitches/react";
 
-interface GameProps {
-  width: number;
-  height: number;
-  blockSize: number;
-}
-
-const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
-  const { width, height, blockSize } = props;
-
+function Game() {
   const grid = useGameStore((state) => state.grid);
-
   const input = useGameStore((state) => state.input);
   const current = useGameStore((state) => state.current);
   const currentPieceId = useGameStore((state) => state.currentPieceId);
-
   const isReady = useGameStore((state) => state.status !== "loading");
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [width, setGridWidth] = useState(baseWidth);
+  const [height, setGridHeight] = useState(baseHeight);
+  const [blockSize, setBlockSize] = useState(baseSize);
+
+  const ready = useGameStore((state) => state.ready);
+
+  useLayoutEffect(() => {
+    const width = ref.current?.clientWidth || 0;
+    const multiplier = Math.floor(width / baseWidth);
+
+    setGridWidth(baseWidth * multiplier);
+    setGridHeight(baseHeight * multiplier);
+    setBlockSize(baseSize * multiplier);
+    ready();
+  }, [ready]);
 
   const handleBoardClick = () => {
     input({ ...idleInput, start: true });
   };
 
+  const gridDimensions = css({ width, height });
+  const classes = `border-[1px] 
+    border-white 
+    relative box-content 
+    flex 
+    justify-center 
+    items-center 
+    ${gridDimensions}`;
+
   return (
     <>
       <div ref={ref} className="w-[40vh] h-[80vh] flex flex-col items-center">
         {isReady && (
-          <div
-            style={{
-              width,
-              height,
-            }}
-            className="border-[1px] border-white relative box-content flex justify-center items-center"
-            onClick={handleBoardClick}
-          >
+          <div className={classes} onClick={handleBoardClick}>
             <Status />
             {current &&
               currentPieceId &&
@@ -76,6 +86,6 @@ const Game = forwardRef<HTMLDivElement, GameProps>(function Game(props, ref) {
       </div>
     </>
   );
-});
+}
 
 export default Game;

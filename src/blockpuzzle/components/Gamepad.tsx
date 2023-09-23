@@ -2,13 +2,27 @@ import { MouseEvent, useEffect, useRef } from "react";
 import { acceptedKeys, idleInput } from "../constants";
 import { useGameStore } from "./GameClient";
 import { GameInput } from "../types";
-import ArrowIcon from "./ArrowIcon"
+import ArrowIcon from "./ArrowIcon";
 import { timeout } from "../tools";
 import RotateIcon from "./RotateIcon";
 import React from "react";
 
-const buttonStyle =
-  "border-white border-[1px] rounded aspect-square text-center align-middle w-[64px] first:mr-3 flex justify-center items-center text-[32px] active:bg-white active:text-black select-none group";
+const buttonStyle = `border-white 
+  border-[1px] 
+  rounded 
+  aspect-square 
+  text-center
+  align-middle 
+  w-[64px] 
+  first:mr-3 
+  flex 
+  justify-center 
+  items-center 
+  text-[32px] 
+  active:bg-white 
+  active:text-black 
+  select-none 
+  group`;
 
 const isMobile = () => {
   return navigator.userAgent.match(/mobile|iphone|android|ipad/i);
@@ -125,7 +139,7 @@ const Gamepad = () => {
     <div className="flex justify-between w-full mt-2 absolute -bottom-[80px]">
       <div className="flex">
         <button ref={leftRef} className={buttonStyle} onClick={leftClick}>
-          <ArrowIcon className="rotate-90"/>
+          <ArrowIcon className="rotate-90" />
         </button>
         <button ref={rightRef} className={buttonStyle} onClick={rightClick}>
           <ArrowIcon className="-rotate-90" />

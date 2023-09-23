@@ -1,26 +1,28 @@
-import classNames from "classnames";
 import { Block } from "../types";
+import React from "react";
+import { css } from "@stitches/react";
 
 type GridBlockProps = Omit<Block, "color">;
 
 function GridBlock(props: GridBlockProps) {
   const { x, y, size } = props;
 
-  const classes = classNames(
-    "bg-transparent aspect-square border-[1px] border-white absolute z-0 opacity-10",
-  );
+  const blockPosition = css({
+    left: x * size,
+    top: y * size,
+    width: size,
+    height: size,
+  });
 
-  return (
-    <div
-      style={{
-        left: x * size,
-        top: y * size,
-        width: size,
-        height: size,
-      }}
-      className={classes}
-    />
-  );
+  const classes = `bg-transparent 
+    aspect-square 
+    border-[1px]
+    border-white
+    absolute z-0
+    opacity-10
+    ${blockPosition}`;
+
+  return <div className={classes} />;
 }
 
-export default GridBlock;
+export default React.memo(GridBlock);

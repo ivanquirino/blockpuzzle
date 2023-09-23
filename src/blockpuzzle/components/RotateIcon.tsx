@@ -1,13 +1,12 @@
-import classNames from "classnames";
-
 interface IconProps {
   className?: string;
 }
 
 const RotateIcon = ({ className }: IconProps) => {
+  const classes = `h-[32px] w-[32px] text-white group-active:text-black ${className}`;
   return (
     <svg
-      className={classNames("h-[32px] w-[32px] text-white group-active:text-black",  className)}
+      className={classes}
       viewBox="-0.5 0 25 25"
       stroke="currentColor"
       fill="none"
