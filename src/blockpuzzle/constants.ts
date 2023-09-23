@@ -1,11 +1,12 @@
 import { GameInput } from "./types";
 
-export const ROWS = 22;
+export const SPAWN_ROWS = 3;
+export const ROWS = 20 + SPAWN_ROWS;
 export const COLS = 10;
 
 export const baseSize = 4;
 export const baseWidth = baseSize * COLS;
-export const baseHeight = baseSize * (ROWS - 2);
+export const baseHeight = baseSize * (ROWS - SPAWN_ROWS);
 
 export const idleInput: GameInput = {
   left: false,
