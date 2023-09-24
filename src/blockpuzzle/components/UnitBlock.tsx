@@ -54,7 +54,7 @@ function UnitBlock(props: Block) {
       prevX.current = x;
       return p;
     });
-  });
+  }, [x, y, size]);
 
   return <div ref={ref} className={classes} data-key={`c-${y * COLS + x}`} />;
 }
