@@ -6,7 +6,6 @@ import {
   CurrentPiece,
   Grid,
   PieceId,
-  GameCallbacks,
   Status,
   SoundFx,
 } from "./types";
@@ -60,11 +59,11 @@ const getInitialState = (): State => ({
   current: null,
   currentPieceId: null,
   spawnBag: [],
-  sound: { fx: null },
+  sound: { fx: "noop" },
 });
 
-const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
-  (callbacks) => (set, get) => {
+const store: () => StateCreator<State & Actions> =
+  () => (set, get) => {
     // this function has the random generator sideEffect
     // and can't be written as a function of state and input
     const generatePieceSet = () => {
@@ -124,9 +123,9 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         set(placeCurrentBlock);
         if (prevGrid !== get().grid) {
           if (drop) {
-            callbacks.onFall();
+            set({ sound: { fx: "drop" } });
           } else {
-            callbacks.onLanding();
+            set({ sound: { fx: "landing" } });
           }
         }
 
@@ -134,14 +133,14 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         prevGrid = get().grid;
         set(clearCompleteRows);
         if (prevGrid !== get().grid) {
-          callbacks.onClear();
+          set({ sound: { fx: "clear" } });
         }
 
         //update level
         let prevLvl = get().level;
         set(updateLevel);
         if (prevLvl !== get().level) {
-          callbacks.onLevelUp();
+          set({ sound: { fx: "lvup" } });
         }
 
         //check game over
@@ -181,7 +180,7 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         set(moveCurrentPiece(input));
 
         if ((input.left || input.right) && prev != get().current) {
-          callbacks.onMove();
+          set({ sound: { fx: "move" } });
         }
       },
       drop: () => {
@@ -208,7 +207,7 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         set(rotateClockwise);
 
         if (prev !== get().current) {
-          callbacks.onRotate();
+          set({ sound: { fx: "rotate" } });
         }
       },
       pause: () => {
@@ -225,9 +224,9 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
     };
   };
 
-export const storeFactory = (callbacks: GameCallbacks) => {
+export const storeFactory = () => {
   const enhancedStore = createStore(
-    devtools(store(callbacks), {
+    devtools(store(), {
       enabled: process.env.NODE_ENV !== "production",
     })
   );

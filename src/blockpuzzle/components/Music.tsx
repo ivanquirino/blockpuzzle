@@ -12,7 +12,6 @@ const Music = () => {
       music.volume = 0.3;
 
       if (status === "started") {
-        console.log("play music");
         music.play();
       }
       if (status === "paused") {
@@ -26,7 +25,7 @@ const Music = () => {
   }, [status]);
 
   return (
-    <audio ref={musicRef} src="korobeiniki.ogg">
+    <audio ref={musicRef} src="korobeiniki.ogg" loop>
       Korobeiniki theme music
     </audio>
   );

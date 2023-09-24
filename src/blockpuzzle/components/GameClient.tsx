@@ -3,10 +3,10 @@
 import Game from "./Game";
 import { storeFactory } from "../store";
 import TopUI from "./TopUI";
-import callbacks from "../webCallbacks";
 import Music from "./Music";
+import SoundEffects from "./SoundEffects";
 
-export const { useGameStore } = storeFactory(callbacks());
+export const { useGameStore } = storeFactory();
 
 function GameClient() {
   return (
@@ -14,6 +14,7 @@ function GameClient() {
       <TopUI />
       <Game />
       <Music />
+      <SoundEffects />
     </div>
   );
 }

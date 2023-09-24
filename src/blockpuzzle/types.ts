@@ -43,8 +43,8 @@ export type SoundFx =
   | "rotate"
   | "move"
   | "clear"
-  | "levelUp"
-  | "gameOver"
+  | "lvup"
+  | "gameover"
   | "landing"
-  | "fall"
-  | null;
+  | "drop"
+  | "noop";
