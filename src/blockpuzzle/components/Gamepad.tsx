@@ -80,7 +80,7 @@ const Gamepad = () => {
           while (isPressed) {
             input(inputObj);
 
-            await timeout(16);
+            await timeout(50);
           }
         },
         end: () => {
