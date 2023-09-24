@@ -30,3 +30,21 @@ export type GameCallbacks = {
   onStart: () => void;
   onPause: () => void;
 };
+
+export type Status =
+  | "loading"
+  | "idle"
+  | "started"
+  | "paused"
+  | "gameover"
+  | "wait";
+
+export type SoundFx =
+  | "rotate"
+  | "move"
+  | "clear"
+  | "levelUp"
+  | "gameOver"
+  | "landing"
+  | "fall"
+  | null;

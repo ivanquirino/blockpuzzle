@@ -1,7 +1,15 @@
 import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { useStore, StateCreator } from "zustand";
-import { GameInput, CurrentPiece, Grid, PieceId, GameCallbacks } from "./types";
+import {
+  GameInput,
+  CurrentPiece,
+  Grid,
+  PieceId,
+  GameCallbacks,
+  Status,
+  SoundFx,
+} from "./types";
 import {
   placeCurrentBlock,
   spawn,
@@ -22,13 +30,14 @@ import throttle from "lodash.throttle";
 import { ROWS } from "./constants";
 
 export interface State {
-  status: "loading" | "idle" | "started" | "paused" | "gameover";
+  status: Status;
   score: number;
   level: number;
   grid: Grid;
   current: CurrentPiece | null;
   currentPieceId: PieceId | null;
   spawnBag: PieceId[];
+  sound: { fx: SoundFx };
 }
 
 export interface Actions {
@@ -51,6 +60,7 @@ const getInitialState = (): State => ({
   current: null,
   currentPieceId: null,
   spawnBag: [],
+  sound: { fx: null },
 });
 
 const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
@@ -72,10 +82,10 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
       return spawnBag;
     };
 
-    const limitedMove = throttle((input: GameInput) => get().move(input), 30);
+    const tMove = throttle((input: GameInput) => get().move(input), 30);
 
-    const limitedDrop = throttle(() => get().drop(), 30);
-    const limitedRotate = throttle(() => get().rotateClockwise(), 120);
+    const tDrop = throttle(() => get().drop(), 30);
+    const tRotate = throttle(() => get().rotateClockwise(), 120);
 
     return {
       ...getInitialState(),
@@ -100,11 +110,11 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         if (input.start) return;
 
         if (input.up) {
-          limitedRotate();
+          tRotate();
         }
-        if (input.down) limitedDrop();
+        if (input.down) tDrop();
 
-        limitedMove(input);
+        tMove(input);
       },
       update: (drop = false) => {
         // place
@@ -135,7 +145,6 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         //check game over
         if (isGameOver(get())) {
           set({ status: "gameover" });
-          callbacks.onGameOver();
           return;
         }
 
@@ -144,7 +153,6 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
       },
       start: async () => {
         set({ status: "started" });
-        callbacks.onStart();
 
         generatePieceSet();
         set(spawn);
@@ -202,7 +210,6 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         if (get().status !== "started") return;
 
         set({ status: "paused" });
-        callbacks.onPause();
       },
       reset: () => {
         set({ ...getInitialState(), status: "idle" });
