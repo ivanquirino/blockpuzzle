@@ -4,7 +4,14 @@
 import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { useGameStore } from "./GameClient";
 import UnitBlock, { GridUnitBlock } from "./UnitBlock";
-import { SPAWN_ROWS, baseHeight, baseSize, baseWidth, idleInput } from "../constants";
+import {
+  COLS,
+  SPAWN_ROWS,
+  baseHeight,
+  baseSize,
+  baseWidth,
+  idleInput,
+} from "../constants";
 import Status from "./Status";
 import GridBlock from "./GridBlock";
 import Gamepad from "./Gamepad";
@@ -57,12 +64,12 @@ function Game() {
             {current &&
               currentPieceId &&
               current.map(
-                ({ x, y }) =>
+                ({ x, y }, i) =>
                   y > 2 && ( // do not render invisible rows
                     <UnitBlock
-                      key={`${x}-${y}`}
+                      key={`c-${i}`}
                       x={x}
-                      y={y - SPAWN_ROWS} // account for extre invisible rows
+                      y={y - SPAWN_ROWS} // account for extra invisible rows
                       size={blockSize}
                       color={currentPieceId}
                     />
@@ -72,10 +79,15 @@ function Game() {
               (row, y) =>
                 y > 2 &&
                 row.map((col, x) => (
-                  <Fragment key={`${y}${x}`}>
+                  <Fragment key={`grid-${(y - SPAWN_ROWS) * COLS + x}`}>
                     <GridBlock x={x} y={y - SPAWN_ROWS} size={blockSize} />
                     {col && (
-                      <GridUnitBlock x={x} y={y - SPAWN_ROWS} size={blockSize} color={col} />
+                      <GridUnitBlock
+                        x={x}
+                        y={y - SPAWN_ROWS}
+                        size={blockSize}
+                        color={col}
+                      />
                     )}
                   </Fragment>
                 ))

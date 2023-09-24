@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { Block } from "../types";
 import styles from "./UnitBlock.module.css";
 import { css } from "@stitches/react";
+import { tween } from "shifty";
+import { COLS } from "../constants";
 
 const colors = [
   "null",
@@ -18,8 +20,6 @@ function UnitBlock(props: Block) {
   const { x, y, size, color } = props;
 
   const blockStyle = css({
-    left: x * size,
-    top: y * size,
     width: size,
     height: size,
     borderWidth: size / 4,
@@ -35,7 +35,28 @@ function UnitBlock(props: Block) {
   ${colors[color]}
   ${blockStyle}`;
 
-  return <div className={classes} />;
+  const ref = useRef<HTMLDivElement>(null);
+  const prevY = useRef<number>(y);
+  const prevX = useRef<number>(x);
+
+  useLayoutEffect(() => {
+    tween({
+      from: { y: prevY.current * size, x: prevX.current * size },
+      to: { y: y * size, x: x * size },
+      duration: 50,
+      easing: "linear",
+      render: ({ y: y1, x: x1 }) => {
+        ref.current?.style.setProperty("top", `${y1 as number}px`);
+        ref.current?.style.setProperty("left", `${x1 as number}px`);
+      },
+    }).then((p) => {
+      prevY.current = y;
+      prevX.current = x;
+      return p;
+    });
+  });
+
+  return <div ref={ref} className={classes} data-key={`c-${y * COLS + x}`} />;
 }
 
 export default UnitBlock;

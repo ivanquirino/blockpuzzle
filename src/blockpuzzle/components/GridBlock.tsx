@@ -1,6 +1,7 @@
 import { Block } from "../types";
 import React from "react";
 import { css } from "@stitches/react";
+import { COLS } from "../constants";
 
 type GridBlockProps = Omit<Block, "color">;
 
@@ -22,7 +23,7 @@ function GridBlock(props: GridBlockProps) {
     opacity-10
     ${blockPosition}`;
 
-  return <div className={classes} />;
+  return <div className={classes} data-key={`grid-${y * COLS + x}`} />;
 }
 
 export default React.memo(GridBlock);
