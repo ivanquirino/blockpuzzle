@@ -87,6 +87,8 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
     const tDrop = throttle(() => get().drop(), 30);
     const tRotate = throttle(() => get().rotateClockwise(), 120);
 
+    let timeoutId: any;
+
     return {
       ...getInitialState(),
 
@@ -152,6 +154,7 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
         generatePieceSet();
       },
       start: async () => {
+        clearTimeout(timeoutId);
         set({ status: "started" });
 
         generatePieceSet();
@@ -166,7 +169,9 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
           let timeStep = 1000 - (level - 1) * 100;
           if (timeStep < 100) timeStep = 100;
 
-          await timeout(timeStep);
+          const { timeoutId: t, promise } = timeout(timeStep);
+          timeoutId = t;
+          await promise;
         }
       },
       move: (input) => {
