@@ -88,6 +88,7 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
   const tRotate = throttle(() => get().rotateClockwise(), 120);
 
   let timeElapsed = 0;
+  let canPause = true;
 
   return {
     ...getInitialState(),
@@ -152,6 +153,10 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     },
     start: async () => {
       set({ status: "started" });
+      
+      setTimeout(() => { // need to wait some time to pause again
+        canPause = true;
+      }, 3000);
 
       generatePieceSet();
       set(spawn);
@@ -211,8 +216,10 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     },
     pause: () => {
       if (get().status !== "started") return;
+      if (!canPause) return;
 
       set({ status: "paused" });
+      canPause = false;
     },
     reset: () => {
       set({ ...getInitialState(), status: "idle" });
