@@ -13,11 +13,20 @@ export const idleInput: GameInput = {
   right: false,
   down: false,
   start: false,
-  up: false
+  up: false,
 };
 
-export const acceptedKeys = ["ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "ArrowUp"];
+export const acceptedKeys = [
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "Enter",
+  "ArrowUp",
+];
 
 export const scorePerRow = 100;
 
-export const initialTimeStep = 1000;
+export const initialFallInterval = 1000;
+export const minFallInterval = 100;
+
+export const timeStep = 50;

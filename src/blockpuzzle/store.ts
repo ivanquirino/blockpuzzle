@@ -23,10 +23,11 @@ import {
   getMaxY,
   isPieceBlocked,
   moveDown,
+  getFallInterval,
 } from "./game";
 import { timeout } from "./tools";
 import throttle from "lodash.throttle";
-import { ROWS } from "./constants";
+import { ROWS, timeStep } from "./constants";
 
 export interface State {
   status: Status;
@@ -86,8 +87,7 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
   const tDrop = throttle(() => get().drop(), 30);
   const tRotate = throttle(() => get().rotateClockwise(), 120);
 
-  let timeoutId: any;
-  let elapsed: number;
+  let timeElapsed = 0;
 
   return {
     ...getInitialState(),
@@ -149,9 +149,6 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
         set({ status: "gameover" });
         return;
       }
-
-      set(spawn);
-      generatePieceSet();
     },
     start: async () => {
       set({ status: "started" });
@@ -159,18 +156,20 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
       generatePieceSet();
       set(spawn);
 
-      // time loop
       while (get().status === "started") {
-        const level = get().level;
-        let timeStep = 1000 - (level - 1) * 100;
-        if (timeStep < 100) timeStep = 100;
+        const fallInterval = getFallInterval(get().level);
 
-        const { timeoutId: t, promise } = timeout(timeStep);
-        timeoutId = t;
-        await promise;
+        if (timeElapsed >= fallInterval) {
+          get().update(false);
+          set(fallCurrentPiece);
+          set(spawn);
+          generatePieceSet();
 
-        get().update(false);
-        set(fallCurrentPiece);
+          timeElapsed = 0;
+        }
+
+        await timeout(timeStep).promise;
+        timeElapsed += timeStep;
       }
     },
     move: (input) => {
@@ -213,7 +212,6 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     pause: () => {
       if (get().status !== "started") return;
 
-      clearTimeout(timeoutId);
       set({ status: "paused" });
     },
     reset: () => {

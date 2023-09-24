@@ -1,5 +1,5 @@
 import { State } from "./store";
-import { scorePerRow, ROWS, COLS, initialTimeStep } from "./constants";
+import { scorePerRow, ROWS, COLS, initialFallInterval, timeStep, minFallInterval } from "./constants";
 import { GameInput, CurrentPiece, Grid, PieceId } from "./types";
 
 export const pieceO = [
@@ -355,6 +355,10 @@ const moveRowsToBottom = (removedGrid: Grid) => {
   return newGrid;
 };
 
+export const getAwardedScore = (level: number, numberOfRows: number) => {
+  return level * scorePerRow * numberOfRows * numberOfRows;
+}
+
 /**
  * Clear full rows, move pieces to the bottom and update score
  * @param state
@@ -369,7 +373,7 @@ export function clearCompleteRows(state: State) {
 
     return {
       grid: newGrid,
-      score: state.score + state.level * scorePerRow * fullRows.length * fullRows.length,
+      score: state.score + getAwardedScore(state.level, fullRows.length),
     };
   }
 
@@ -459,7 +463,7 @@ export const getScoreForNextLevel = (level = 1) => {
   let sum = 0;
 
   for (let i = 0; i <= level; i++) {
-    sum = i * 1000 + sum;
+    sum = sum + i * 1000;
   }
 
   return sum;
@@ -475,10 +479,6 @@ export const updateLevel = (state: State) => {
   return state;
 };
 
-export const getTimeStep = (score: number) => {
-  if (score > 1000) {
-    const lvl = score;
-  }
-
-  return initialTimeStep;
+export const getFallInterval = (level: number) => {
+  return Math.max(minFallInterval, initialFallInterval - (level - 1) * minFallInterval)
 };
