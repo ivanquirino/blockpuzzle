@@ -72,10 +72,10 @@ const store: (callbacks: GameCallbacks) => StateCreator<State & Actions> =
       return spawnBag;
     };
 
-    const limitedMove = throttle((input: GameInput) => get().move(input), 50);
+    const limitedMove = throttle((input: GameInput) => get().move(input), 30);
 
     const limitedDrop = throttle(() => get().drop(), 30);
-    const limitedRotate = throttle(() => get().rotateClockwise(), 100);
+    const limitedRotate = throttle(() => get().rotateClockwise(), 120);
 
     return {
       ...getInitialState(),
