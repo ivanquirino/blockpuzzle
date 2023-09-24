@@ -48,11 +48,12 @@ function Game() {
 
   const gridDimensions = css({ width, height });
   const classes = `border-[1px] 
-    border-white 
+    border-neutral-300 
     relative box-content 
     flex 
     justify-center 
     items-center 
+    rounded
     ${gridDimensions}`;
 
   return (

@@ -19,8 +19,8 @@ const buttonStyle = `border-white
   justify-center 
   items-center 
   text-[32px] 
-  active:bg-white 
-  active:text-black 
+  active:bg-neutral-300 
+  active:text-neutral-900 
   select-none 
   group`;
 

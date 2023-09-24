@@ -5,6 +5,7 @@ import { storeFactory } from "../store";
 import TopUI from "./TopUI";
 import Music from "./Music";
 import SoundEffects from "./SoundEffects";
+import WelcomeDialog from "./WelcomeDialog";
 
 export const { useGameStore } = storeFactory();
 

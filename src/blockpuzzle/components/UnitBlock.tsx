@@ -33,7 +33,7 @@ function UnitBlock(props: Block) {
   aspect-square 
   absolute 
   unit-block 
-  z-40
+  z-30
   top-0
   left-0
   ${styles.unitBlock} 

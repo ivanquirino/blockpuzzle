@@ -19,13 +19,15 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: black;
+  /* color: rgb(var(--foreground-rgb)); */
+  /* background: black; */
   height: 100vh;  
 }
 
 @layer {
   body {
     @apply font-mono font-bold;
+    @apply bg-neutral-900;
+    @apply text-neutral-300;
   }
 }
