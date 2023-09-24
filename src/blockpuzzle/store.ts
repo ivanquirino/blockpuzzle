@@ -49,6 +49,7 @@ export interface Actions {
   ready: () => void;
   drop: () => void;
   update: (drop: boolean) => void;
+  noopSound: () => void;
 }
 
 const getInitialState = (): State => ({
@@ -62,167 +63,169 @@ const getInitialState = (): State => ({
   sound: { fx: "noop" },
 });
 
-const store: () => StateCreator<State & Actions> =
-  () => (set, get) => {
-    // this function has the random generator sideEffect
-    // and can't be written as a function of state and input
-    const generatePieceSet = () => {
-      const { spawnBag } = get();
+const store: () => StateCreator<State & Actions> = () => (set, get) => {
+  // this function has the random generator sideEffect
+  // and can't be written as a function of state and input
+  const generatePieceSet = () => {
+    const { spawnBag } = get();
 
-      if (spawnBag.length === 0) {
-        const pieceSet = generateRandomPieceSet();
-        const bag = Array.from(pieceSet);
+    if (spawnBag.length === 0) {
+      const pieceSet = generateRandomPieceSet();
+      const bag = Array.from(pieceSet);
 
-        set({ spawnBag: bag });
+      set({ spawnBag: bag });
 
-        return bag;
+      return bag;
+    }
+
+    return spawnBag;
+  };
+
+  const tMove = throttle((input: GameInput) => get().move(input), 30);
+
+  const tDrop = throttle(() => get().drop(), 30);
+  const tRotate = throttle(() => get().rotateClockwise(), 120);
+
+  let timeoutId: any;
+
+  return {
+    ...getInitialState(),
+
+    input: (input) => {
+      const status = get().status;
+
+      if (status === "loading") return;
+
+      if (input.start && status === "idle") {
+        get().start();
+      }
+      if (input.start && status === "started") {
+        get().pause();
+      }
+      if (input.start && status === "paused") {
+        get().start();
+      }
+      if (input.start && status === "gameover") {
+        get().reset();
+      }
+      if (input.start) return;
+
+      if (input.up) {
+        tRotate();
+      }
+      if (input.down) tDrop();
+
+      tMove(input);
+    },
+    update: (drop = false) => {
+      // place
+      let prevGrid = get().grid;
+      set(placeCurrentBlock);
+      if (prevGrid !== get().grid) {
+        if (drop) {
+          set({ sound: { fx: "drop" } });
+        } else {
+          set({ sound: { fx: "landing" } });
+        }
       }
 
-      return spawnBag;
-    };
+      //clear
+      prevGrid = get().grid;
+      set(clearCompleteRows);
+      if (prevGrid !== get().grid) {
+        set({ sound: { fx: "clear" } });
+      }
 
-    const tMove = throttle((input: GameInput) => get().move(input), 30);
+      //update level
+      let prevLvl = get().level;
+      set(updateLevel);
+      if (prevLvl !== get().level) {
+        set({ sound: { fx: "lvup" } });
+      }
 
-    const tDrop = throttle(() => get().drop(), 30);
-    const tRotate = throttle(() => get().rotateClockwise(), 120);
+      //check game over
+      if (isGameOver(get())) {
+        set({ status: "gameover" });
+        return;
+      }
 
-    let timeoutId: any;
+      set(spawn);
+      generatePieceSet();
+    },
+    start: async () => {
+      clearTimeout(timeoutId);
+      set({ status: "started" });
 
-    return {
-      ...getInitialState(),
+      generatePieceSet();
+      set(spawn);
 
-      input: (input) => {
-        const status = get().status;
+      // time loop
+      while (get().status === "started") {
+        get().update(false);
+        set(fallCurrentPiece);
 
-        if (status === "loading") return;
+        const level = get().level;
+        let timeStep = 1000 - (level - 1) * 100;
+        if (timeStep < 100) timeStep = 100;
 
-        if (input.start && status === "idle") {
-          get().start();
-        }
-        if (input.start && status === "started") {
-          get().pause();
-        }
-        if (input.start && status === "paused") {
-          get().start();
-        }
-        if (input.start && status === "gameover") {
-          get().reset();
-        }
-        if (input.start) return;
+        const { timeoutId: t, promise } = timeout(timeStep);
+        timeoutId = t;
+        await promise;
+      }
+    },
+    move: (input) => {
+      if (get().status !== "started") return;
 
-        if (input.up) {
-          tRotate();
-        }
-        if (input.down) tDrop();
+      const prev = get().current;
+      set(moveCurrentPiece(input));
 
-        tMove(input);
-      },
-      update: (drop = false) => {
-        // place
-        let prevGrid = get().grid;
-        set(placeCurrentBlock);
-        if (prevGrid !== get().grid) {
-          if (drop) {
-            set({ sound: { fx: "drop" } });
-          } else {
-            set({ sound: { fx: "landing" } });
-          }
-        }
+      if ((input.left || input.right) && prev != get().current) {
+        set({ sound: { fx: "move" } });
+      }
+    },
+    drop: () => {
+      if (get().status !== "started") return;
 
-        //clear
-        prevGrid = get().grid;
-        set(clearCompleteRows);
-        if (prevGrid !== get().grid) {
-          set({ sound: { fx: "clear" } });
-        }
+      const current = get().current;
 
-        //update level
-        let prevLvl = get().level;
-        set(updateLevel);
-        if (prevLvl !== get().level) {
-          set({ sound: { fx: "lvup" } });
-        }
+      if (current) {
+        const next = moveDown(current);
 
-        //check game over
-        if (isGameOver(get())) {
-          set({ status: "gameover" });
+        // if there's space to fall
+        if (!isPieceBlocked(next, get().grid) && getMaxY(next) <= ROWS - 1) {
+          set({ current: next });
           return;
         }
 
-        set(spawn);
-        generatePieceSet();
-      },
-      start: async () => {
-        clearTimeout(timeoutId);
-        set({ status: "started" });
+        get().update(true);
+      }
+    },
+    rotateClockwise: () => {
+      if (get().status !== "started") return;
 
-        generatePieceSet();
-        set(spawn);
+      const prev = get().current;
+      set(rotateClockwise);
 
-        // time loop
-        while (get().status === "started") {
-          get().update(false);
-          set(fallCurrentPiece);
+      if (prev !== get().current) {
+        set({ sound: { fx: "rotate" } });
+      }
+    },
+    pause: () => {
+      if (get().status !== "started") return;
 
-          const level = get().level;
-          let timeStep = 1000 - (level - 1) * 100;
-          if (timeStep < 100) timeStep = 100;
-
-          const { timeoutId: t, promise } = timeout(timeStep);
-          timeoutId = t;
-          await promise;
-        }
-      },
-      move: (input) => {
-        if (get().status !== "started") return;
-
-        const prev = get().current;
-        set(moveCurrentPiece(input));
-
-        if ((input.left || input.right) && prev != get().current) {
-          set({ sound: { fx: "move" } });
-        }
-      },
-      drop: () => {
-        if (get().status !== "started") return;
-
-        const current = get().current;
-
-        if (current) {
-          const next = moveDown(current);
-
-          // if there's space to fall
-          if (!isPieceBlocked(next, get().grid) && getMaxY(next) <= ROWS - 1) {
-            set({ current: next });
-            return;
-          }
-
-          get().update(true);
-        }
-      },
-      rotateClockwise: () => {
-        if (get().status !== "started") return;
-
-        const prev = get().current;
-        set(rotateClockwise);
-
-        if (prev !== get().current) {
-          set({ sound: { fx: "rotate" } });
-        }
-      },
-      pause: () => {
-        if (get().status !== "started") return;
-
-        set({ status: "paused" });
-      },
-      reset: () => {
-        set({ ...getInitialState(), status: "idle" });
-      },
-      ready: () => {
-        set({ status: "idle" });
-      },
-    };
+      set({ status: "paused" });
+    },
+    reset: () => {
+      set({ ...getInitialState(), status: "idle" });
+    },
+    ready: () => {
+      set({ status: "idle" });
+    },
+    noopSound: () => {
+      set({ sound: { fx: "noop" } });
+    },
   };
+};
 
 export const storeFactory = () => {
   const enhancedStore = createStore(
