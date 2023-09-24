@@ -1,6 +1,6 @@
 import { GameInput } from "./types";
 
-export const SPAWN_ROWS = 3;
+export const SPAWN_ROWS = 2;
 export const ROWS = 20 + SPAWN_ROWS;
 export const COLS = 10;
 

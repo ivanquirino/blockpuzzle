@@ -65,7 +65,7 @@ function Game() {
               currentPieceId &&
               current.map(
                 ({ x, y }, i) =>
-                  y > 2 && ( // do not render invisible rows
+                  y > 1 && ( // do not render invisible rows
                     <UnitBlock
                       key={`c-${i}`}
                       x={x}
@@ -77,7 +77,7 @@ function Game() {
               )}
             {grid.map(
               (row, y) =>
-                y > 2 &&
+                y > 1 &&
                 row.map((col, x) => (
                   <Fragment key={`grid-${(y - SPAWN_ROWS) * COLS + x}`}>
                     <GridBlock x={x} y={y - SPAWN_ROWS} size={blockSize} />

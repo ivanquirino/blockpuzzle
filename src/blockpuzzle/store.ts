@@ -87,6 +87,7 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
   const tRotate = throttle(() => get().rotateClockwise(), 120);
 
   let timeoutId: any;
+  let elapsed: number;
 
   return {
     ...getInitialState(),
@@ -153,7 +154,6 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
       generatePieceSet();
     },
     start: async () => {
-      clearTimeout(timeoutId);
       set({ status: "started" });
 
       generatePieceSet();
@@ -161,9 +161,6 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
 
       // time loop
       while (get().status === "started") {
-        get().update(false);
-        set(fallCurrentPiece);
-
         const level = get().level;
         let timeStep = 1000 - (level - 1) * 100;
         if (timeStep < 100) timeStep = 100;
@@ -171,6 +168,9 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
         const { timeoutId: t, promise } = timeout(timeStep);
         timeoutId = t;
         await promise;
+
+        get().update(false);
+        set(fallCurrentPiece);
       }
     },
     move: (input) => {
@@ -213,6 +213,7 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     pause: () => {
       if (get().status !== "started") return;
 
+      clearTimeout(timeoutId);
       set({ status: "paused" });
     },
     reset: () => {
