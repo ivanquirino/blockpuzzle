@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { store } from "./GameClient";
 import React from "react";
 
+const context = new AudioContext();
+
 const SoundEffects = () => {
   const sounds = useRef({
     rotate: useRef<HTMLAudioElement>(null),
@@ -14,6 +16,13 @@ const SoundEffects = () => {
   });
 
   useEffect(() => {
+    const move = sounds.current.move.current;
+    
+    if (move) {
+      const moveTrack = context.createMediaElementSource(move);
+      moveTrack.connect(context.destination);
+    }
+
     const unsub = store.subscribe((state, prevState) => {
       if (state.status !== prevState.status && state.status === "gameover") {
         sounds.current.gameover.current?.play();
