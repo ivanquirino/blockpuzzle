@@ -3,12 +3,13 @@ import { useGameStore } from "./GameClient";
 
 const Music = () => {
   const status = useGameStore((state) => state.status);
+  const isMusicEnabled = useGameStore((state) => state.settings.music);
   const musicRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const music = musicRef.current;
 
-    if (music) {
+    if (isMusicEnabled && music) {
       music.volume = 0.3;
 
       if (status === "started") {
@@ -22,7 +23,7 @@ const Music = () => {
         music.currentTime = 0;
       }
     }
-  }, [status]);
+  }, [status, isMusicEnabled]);
 
   return (
     <audio ref={musicRef} src="korobeiniki.ogg" loop>

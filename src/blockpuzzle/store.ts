@@ -38,6 +38,8 @@ export interface State {
   currentPieceId: PieceId | null;
   spawnBag: PieceId[];
   sound: { fx: SoundFx };
+  menu: boolean;
+  settings: { music: boolean; fx: boolean };
 }
 
 export interface Actions {
@@ -51,6 +53,9 @@ export interface Actions {
   drop: () => void;
   update: (drop: boolean) => void;
   noopSound: () => void;
+  openMenu: (open: boolean) => void;
+  toggleMusic: () => void;
+  toggleFx: () => void;
 }
 
 const getInitialState = (): State => ({
@@ -62,6 +67,8 @@ const getInitialState = (): State => ({
   currentPieceId: null,
   spawnBag: [],
   sound: { fx: "noop" },
+  menu: false,
+  settings: { music: true, fx: true },
 });
 
 const store: () => StateCreator<State & Actions> = () => (set, get) => {
@@ -153,8 +160,9 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     },
     start: async () => {
       set({ status: "started" });
-      
-      setTimeout(() => { // need to wait some time to pause again
+
+      setTimeout(() => {
+        // need to wait some time to pause again
         canPause = true;
       }, 3000);
 
@@ -229,6 +237,21 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     },
     noopSound: () => {
       set({ sound: { fx: "noop" } });
+    },
+    openMenu: (open) => {
+      if (open) get().pause();
+
+      set({ menu: open });
+    },
+    toggleMusic: () => {
+      set((state) => ({
+        settings: { ...state.settings, music: !state.settings.music },
+      }));
+    },
+    toggleFx: () => {
+      set((state) => ({
+        settings: { ...state.settings, fx: !state.settings.fx },
+      }));
     },
   };
 };

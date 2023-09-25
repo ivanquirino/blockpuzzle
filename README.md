@@ -3,6 +3,8 @@ clear them and earn score points.
 
 Play it online: https://ivanquirino.github.io/blockpuzzle/
 
+&copy; Copyright 2023 Ivan Quirino
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

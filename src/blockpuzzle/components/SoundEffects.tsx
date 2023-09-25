@@ -5,6 +5,7 @@ const SoundEffects = () => {
   const sound = useGameStore((state) => state.sound);
   const status = useGameStore((state) => state.status);
   const noopSound = useGameStore((state) => state.noopSound);
+  const isFxEnabled = useGameStore((state) => state.settings.fx);
 
   const sounds = useRef({
     rotate: useRef<HTMLAudioElement>(null),
@@ -20,17 +21,16 @@ const SoundEffects = () => {
   useEffect(() => {
     const soundFx = sounds.current[sound.fx]?.current;
 
-    if (soundFx && status === "started") {
+    if (isFxEnabled && soundFx && status === "started") {
       soundFx.currentTime = 0;
       soundFx.play();
       noopSound();
     }
-  }, [sound, status, noopSound]);
+  }, [sound, status, noopSound, isFxEnabled]);
 
   useEffect(() => {
     if (status === "gameover") {
       sounds.current.gameover.current?.play();
-     
     }
   }, [status]);
 

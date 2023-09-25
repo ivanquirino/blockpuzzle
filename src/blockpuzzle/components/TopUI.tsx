@@ -4,7 +4,6 @@ import { useGameStore } from "./GameClient";
 import { CurrentPiece, PieceId } from "../types";
 import UnitBlock from "./UnitBlock";
 
-
 function translatePieceToOrigin(piece: CurrentPiece) {
   const [minX, minY] = piece.reduce(
     (acc, pos) => {
@@ -43,9 +42,10 @@ export const PieceDisplay = ({
 
 const TopUI = () => {
   const score = useGameStore((state) => state.score);
-  const level = useGameStore(state => state.level)
+  const level = useGameStore((state) => state.level);
   const next = useGameStore((state) => state.spawnBag[0]);
   const input = useGameStore((state) => state.input);
+  const openMenu = useGameStore((state) => state.openMenu);
 
   const nextPiece = pieces[next] ?? [];
 
@@ -53,7 +53,7 @@ const TopUI = () => {
     <div className="my-2 flex justify-between items-center">
       <div>SCORE {score}</div>
       <div>LV {level}</div>
-      <div className="flex items-center">        
+      <div className="flex items-center">
         <div className="relative w-[64px] h-[32px]">
           {nextPiece.length > 0 && (
             <PieceDisplay piece={nextPiece} pieceId={next} blockSize={16} />
@@ -61,8 +61,8 @@ const TopUI = () => {
         </div>
       </div>
       <button
-        className="rounded border-white border-[1px] px-1 active:bg-white active:text-black transition select-none"
-        onClick={() => input({ ...idleInput, start: true })}
+        className="rounded border-white border-[1px] px-1 active:bg-white active:text-black transition select-none hover:underline"
+        onClick={() => openMenu(true)}
       >
         MENU
       </button>
