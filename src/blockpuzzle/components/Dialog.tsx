@@ -11,6 +11,7 @@ const overlayStyle = `
   w-full 
   bg-black 
   opacity-70
+  z-40
 `;
 
 export const Overlay = forwardRef(function Overlay(_, ref: any) {
