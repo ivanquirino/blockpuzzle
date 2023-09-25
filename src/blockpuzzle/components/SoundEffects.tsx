@@ -2,8 +2,6 @@ import { useEffect, useRef } from "react";
 import { store } from "./GameClient";
 import React from "react";
 
-const context = new AudioContext();
-
 const SoundEffects = () => {
   const sounds = useRef({
     rotate: useRef<HTMLAudioElement>(null),
@@ -15,12 +13,18 @@ const SoundEffects = () => {
     gameover: useRef<HTMLAudioElement>(null),
   });
 
+  const audioContextRef = useRef<AudioContext | null>(null);
+
   useEffect(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContext();
+    }
+
     const move = sounds.current.move.current;
-    
+
     if (move) {
-      const moveTrack = context.createMediaElementSource(move);
-      moveTrack.connect(context.destination);
+      const moveTrack = audioContextRef.current.createMediaElementSource(move);
+      moveTrack.connect(audioContextRef.current.destination);
     }
 
     const unsub = store.subscribe((state, prevState) => {
