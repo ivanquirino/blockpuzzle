@@ -3,6 +3,7 @@ import { pieces } from "../game";
 import { useGameStore } from "./GameClient";
 import { CurrentPiece, PieceId } from "../types";
 import UnitBlock from "./UnitBlock";
+import { useEffect } from "react";
 
 function translatePieceToOrigin(piece: CurrentPiece) {
   const [minX, minY] = piece.reduce(
@@ -44,10 +45,17 @@ const TopUI = () => {
   const score = useGameStore((state) => state.score);
   const level = useGameStore((state) => state.level);
   const next = useGameStore((state) => state.spawnBag[0]);
-  const input = useGameStore((state) => state.input);
   const openMenu = useGameStore((state) => state.openMenu);
+  const pause = useGameStore((state) => state.pause);
 
   const nextPiece = pieces[next] ?? [];
+
+  useEffect(() => {
+    const handleBlur = () => {
+      pause();
+    };
+    window.addEventListener("blur", handleBlur);
+  }, [pause]);
 
   return (
     <div className="my-2 flex justify-between items-center">
