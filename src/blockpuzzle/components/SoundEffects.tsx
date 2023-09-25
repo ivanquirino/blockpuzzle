@@ -29,10 +29,10 @@ const SoundEffects = () => {
   }, [sound, status, noopSound, isFxEnabled]);
 
   useEffect(() => {
-    if (status === "gameover") {
+    if (isFxEnabled && status === "gameover") {
       sounds.current.gameover.current?.play();
     }
-  }, [status]);
+  }, [status, isFxEnabled]);
 
   return (
     <>
