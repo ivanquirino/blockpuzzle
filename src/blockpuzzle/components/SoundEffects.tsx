@@ -38,7 +38,7 @@ const SoundEffects = () => {
         state.status === "started" &&
         state.sound.fx !== "noop"
       ) {
-        const soundFx = sounds.current[state.sound.fx]?.current;
+        const soundFx = sounds.current[state.sound.fx].current;
 
         if (soundFx) {
           soundFx.currentTime = 0;
