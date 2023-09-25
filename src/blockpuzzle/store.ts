@@ -191,7 +191,7 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
       const prev = get().current;
       set(moveCurrentPiece(input));
 
-      if ((input.left || input.right) && prev != get().current) {
+      if ((input.left || input.right) && prev !== get().current) {
         set({ sound: { fx: "move" } });
       }
     },

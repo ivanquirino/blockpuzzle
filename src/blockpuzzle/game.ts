@@ -1,5 +1,11 @@
 import { State } from "./store";
-import { scorePerRow, ROWS, COLS, initialFallInterval, timeStep, minFallInterval } from "./constants";
+import {
+  scorePerRow,
+  ROWS,
+  COLS,
+  initialFallInterval,
+  minFallInterval,
+} from "./constants";
 import { GameInput, CurrentPiece, Grid, PieceId } from "./types";
 
 export const pieceO = [
@@ -67,10 +73,6 @@ export const pieces: Record<PieceId, CurrentPiece> = {
  * @returns updated state
  */
 export const spawn = (state: State) => {
-  // const index = getRandomPieceIndex() as PieceId;
-  // const index = 6;
-  // const piece = pieces[index];
-
   if (state.current === null) {
     const [currentPieceId, ...rest] = state.spawnBag;
     const current = pieces[currentPieceId];
@@ -129,7 +131,15 @@ const getCollisions = (piece: CurrentPiece, grid: Grid) => {
       right: [] as CurrentPiece,
     }
   );
+
   return collisions;
+};
+
+const isCollided = (piece: CurrentPiece, grid: Grid) => {
+  const { blocks, left, right, down } = getCollisions(piece, grid);
+  if (blocks.length || left.length || right.length || down.length) return true;
+
+  return false;
 };
 
 export const getMaxY = (piece: CurrentPiece) => {
@@ -226,7 +236,7 @@ export const rotateClockwise = (state: State) => {
   if (state.current && state.currentPieceId) {
     const rotated = rotatePieceClockwise(state.current, state.currentPieceId);
 
-    let { blocks, left, right, down } = getCollisions(rotated, state.grid);
+    const { blocks, left, right, down } = getCollisions(rotated, state.grid);
 
     let moved = rotated;
 
@@ -261,7 +271,7 @@ export const rotateClockwise = (state: State) => {
       moved = moveUp(moved, getMaxY(down) - (ROWS - 1));
     }
 
-    if (!isPieceBlocked(moved, state.grid)) {
+    if (!isCollided(moved, state.grid)) {
       return { current: moved };
     }
   }
@@ -357,7 +367,7 @@ const moveRowsToBottom = (removedGrid: Grid) => {
 
 export const getAwardedScore = (level: number, numberOfRows: number) => {
   return level * scorePerRow * numberOfRows * numberOfRows;
-}
+};
 
 /**
  * Clear full rows, move pieces to the bottom and update score
@@ -480,5 +490,8 @@ export const updateLevel = (state: State) => {
 };
 
 export const getFallInterval = (level: number) => {
-  return Math.max(minFallInterval, initialFallInterval - (level - 1) * minFallInterval)
+  return Math.max(
+    minFallInterval,
+    initialFallInterval - (level - 1) * minFallInterval
+  );
 };
