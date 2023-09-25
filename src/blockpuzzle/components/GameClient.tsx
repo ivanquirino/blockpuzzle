@@ -8,7 +8,7 @@ import SoundEffects from "./SoundEffects";
 import WelcomeDialog from "./WelcomeDialog";
 import MenuDialog from "./MenuDialog";
 
-export const { useGameStore } = storeFactory();
+export const { store, useGameStore } = storeFactory();
 
 function GameClient() {
   return (

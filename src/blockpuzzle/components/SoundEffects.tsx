@@ -1,12 +1,8 @@
 import { useEffect, useRef } from "react";
-import { useGameStore } from "./GameClient";
+import { store } from "./GameClient";
+import React from "react";
 
 const SoundEffects = () => {
-  const sound = useGameStore((state) => state.sound);
-  const status = useGameStore((state) => state.status);
-  const noopSound = useGameStore((state) => state.noopSound);
-  const isFxEnabled = useGameStore((state) => state.settings.fx);
-
   const sounds = useRef({
     rotate: useRef<HTMLAudioElement>(null),
     move: useRef<HTMLAudioElement>(null),
@@ -15,24 +11,32 @@ const SoundEffects = () => {
     landing: useRef<HTMLAudioElement>(null),
     drop: useRef<HTMLAudioElement>(null),
     gameover: useRef<HTMLAudioElement>(null),
-    noop: null,
   });
 
   useEffect(() => {
-    const soundFx = sounds.current[sound.fx]?.current;
+    const unsub = store.subscribe((state, prevState) => {
+      if (state.status !== prevState.status && state.status === "gameover") {
+        sounds.current.gameover.current?.play();
+      }
 
-    if (isFxEnabled && soundFx && status === "started") {
-      soundFx.currentTime = 0;
-      soundFx.play();
-      noopSound();
-    }
-  }, [sound, status, noopSound, isFxEnabled]);
+      if (
+        state.sound !== prevState.sound &&
+        state.settings.fx &&
+        state.status === "started" &&
+        state.sound.fx !== "noop"
+      ) {
+        const soundFx = sounds.current[state.sound.fx]?.current;
 
-  useEffect(() => {
-    if (isFxEnabled && status === "gameover") {
-      sounds.current.gameover.current?.play();
-    }
-  }, [status, isFxEnabled]);
+        if (soundFx) {
+          soundFx.currentTime = 0;
+          soundFx.play();
+          state.noopSound();
+        }
+      }
+    });
+
+    return unsub;
+  }, []);
 
   return (
     <>
@@ -61,4 +65,4 @@ const SoundEffects = () => {
   );
 };
 
-export default SoundEffects;
+export default React.memo(SoundEffects);
