@@ -29,6 +29,10 @@ const SoundEffects = () => {
     }
 
     const unsub = store.subscribe((state, prevState) => {
+      if (state.status === "started" && audioContextRef.current?.state === "suspended") {
+        audioContextRef.current.resume();
+      }
+      
       if (state.status !== prevState.status && state.status === "gameover") {
         sounds.current.gameover.current?.play();
       }
