@@ -22,7 +22,8 @@ const SoundEffects = () => {
 
     const move = sounds.current.move.current;
 
-    if (move) {
+    // an audio context is needed in this case to play te move sound repeatedly correctly
+    if (move) { 
       const moveTrack = audioContextRef.current.createMediaElementSource(move);
       moveTrack.connect(audioContextRef.current.destination);
     }
