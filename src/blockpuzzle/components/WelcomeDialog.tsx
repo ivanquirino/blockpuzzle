@@ -28,9 +28,9 @@ const WelcomeDialog = () => {
               Welcome!
             </Dialog.Title>
             <Dialog.Description className="text-sm mb-4">
-              This is a clone of a famous game I did for fun and to showcase my
+              This is a simple clone of a famous game I did for fun and to showcase my
               programming skills. As the pieces fall one by one, fill rows to
-              clear them and earn score points.
+              clear them and earn score.
             </Dialog.Description>
             <Controls />
             <Links />
