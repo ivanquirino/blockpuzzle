@@ -61,7 +61,9 @@ const TopUI = () => {
     <div className="my-2 flex justify-between items-center">
       <div>SCORE {score}</div>
       <div>LV {level}</div>
+      
       <div className="flex items-center">
+      <div className="mr-2">NEXT</div>
         <div className="relative w-[64px] h-[32px]">
           {nextPiece.length > 0 && (
             <PieceDisplay piece={nextPiece} pieceId={next} blockSize={16} />
