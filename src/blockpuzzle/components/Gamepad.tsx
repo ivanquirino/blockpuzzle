@@ -72,6 +72,7 @@ const Gamepad = () => {
 
     const inputLimiter = () => {
       let isPressed = false;
+      let timeoutid: any;
 
       return {
         start: async (inputObj: GameInput) => {
@@ -80,12 +81,14 @@ const Gamepad = () => {
           while (isPressed) {
             input(inputObj);
 
-            await timeout(50).promise;
+            const {timeoutId: t , promise } = timeout(50);
+            timeoutid = t;
+            await promise;
           }
         },
         end: () => {
           isPressed = false;
-          input(idleInput);
+          clearTimeout(timeoutid);8
         },
       };
     };

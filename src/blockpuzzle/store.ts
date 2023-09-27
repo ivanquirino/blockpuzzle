@@ -89,10 +89,10 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     return spawnBag;
   };
 
-  const tMove = throttle((input: GameInput) => get().move(input), 30);
+  const tMove = throttle((input: GameInput) => get().move(input), 30, { leading: true });
 
-  const tDrop = throttle(() => get().drop(), 30);
-  const tRotate = throttle(() => get().rotateClockwise(), 120);
+  const tDrop = throttle(() => get().drop(), 30, { leading: true });
+  const tRotate = throttle(() => get().rotateClockwise(), 120, { leading: true });
 
   let timeElapsed = 0;
   let canPause = true;
