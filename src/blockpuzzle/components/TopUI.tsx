@@ -4,6 +4,7 @@ import { useGameStore } from "./GameClient";
 import { CurrentPiece, PieceId } from "../types";
 import UnitBlock from "./UnitBlock";
 import { useEffect } from "react";
+import MenuDialog from "./MenuDialog";
 
 function translatePieceToOrigin(piece: CurrentPiece) {
   const [minX, minY] = piece.reduce(
@@ -76,6 +77,8 @@ const TopUI = () => {
       >
         MENU
       </button>
+      
+      <MenuDialog />
     </div>
   );
 };

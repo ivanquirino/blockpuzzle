@@ -6,7 +6,6 @@ import TopUI from "./TopUI";
 import Music from "./Music";
 import SoundEffects from "./SoundEffects";
 import WelcomeDialog from "./WelcomeDialog";
-import MenuDialog from "./MenuDialog";
 
 export const { store, useGameStore } = storeFactory();
 
@@ -17,8 +16,7 @@ function GameClient() {
       <Game />
       <Music />
       <SoundEffects />
-      <WelcomeDialog />
-      <MenuDialog />
+      <WelcomeDialog />      
     </div>
   );
 }

@@ -54,8 +54,8 @@ export interface Actions {
   update: (drop: boolean) => void;
   noopSound: () => void;
   openMenu: (open: boolean) => void;
-  toggleMusic: () => void;
-  toggleFx: () => void;
+  toggleMusic: (on?: boolean) => void;
+  toggleFx: (on?: boolean) => void;
 }
 
 const getInitialState = (): State => ({
@@ -89,10 +89,14 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
     return spawnBag;
   };
 
-  const tMove = throttle((input: GameInput) => get().move(input), 30, { leading: true });
+  const tMove = throttle((input: GameInput) => get().move(input), 30, {
+    leading: true,
+  });
 
   const tDrop = throttle(() => get().drop(), 30, { leading: true });
-  const tRotate = throttle(() => get().rotateClockwise(), 120, { leading: true });
+  const tRotate = throttle(() => get().rotateClockwise(), 120, {
+    leading: true,
+  });
 
   let timeElapsed = 0;
   let canPause = true;
@@ -243,12 +247,22 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
 
       set({ menu: open });
     },
-    toggleMusic: () => {
+    toggleMusic: (on) => {
+      if (typeof on === "boolean") {
+        set((state) => ({ settings: { ...state.settings, music: on } }));
+        return;
+      }
+
       set((state) => ({
         settings: { ...state.settings, music: !state.settings.music },
       }));
     },
-    toggleFx: () => {
+    toggleFx: (on) => {
+      if (typeof on === "boolean") {
+        set((state) => ({ settings: { ...state.settings, fx: on } }));
+        return;
+      }
+
       set((state) => ({
         settings: { ...state.settings, fx: !state.settings.fx },
       }));

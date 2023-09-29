@@ -4,6 +4,7 @@ import Controls from "./Controls";
 import Links from "./Links";
 import { Close, Content, Overlay } from "./Dialog";
 import Button from "./Button";
+import { useEffect } from "react";
 
 const MenuDialog = () => {
   const open = useGameStore((state) => state.menu);
@@ -12,6 +13,23 @@ const MenuDialog = () => {
   const fx = useGameStore((state) => state.settings.fx);
   const toggleMusic = useGameStore((state) => state.toggleMusic);
   const toggleFx = useGameStore((state) => state.toggleFx);
+
+  useEffect(() => {
+    const musicStorage = localStorage.getItem("music");
+    const fxStorage = localStorage.getItem("fx");
+
+    if (musicStorage === "false") {
+      toggleMusic(false);
+    }
+    if (fxStorage === "false") {
+      toggleFx(false);
+    }
+  }, [toggleFx, toggleMusic]);
+
+  useEffect(() => {
+    localStorage.setItem("music", music.toString());
+    localStorage.setItem("fx", fx.toString());
+  }, [music, fx]);
 
   const handleClick = () => {
     openMenu(!open);
