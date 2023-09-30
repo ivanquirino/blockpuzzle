@@ -9,7 +9,7 @@ const statusText: Partial<Record<State["status"], string>> = {
   started: ""
 };
 
-const Status = () => {
+const StatusOverlay = () => {
   const status = useGameStore((state) => {
 
     return statusText[state.status] ?? state.status;
@@ -18,4 +18,4 @@ const Status = () => {
   return <h3 className="uppercase text-center z-40 mx-8">{status}</h3>;
 };
 
-export default React.memo(Status);
+export default React.memo(StatusOverlay);

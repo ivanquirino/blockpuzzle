@@ -48,3 +48,9 @@ export type SoundFx =
   | "landing"
   | "drop"
   | "noop";
+
+export interface GameDimensionsProps {
+  width: number;
+  height: number;
+  blockSize: number;
+}

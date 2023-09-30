@@ -19,7 +19,8 @@ function GridBlock(props: GridBlockProps) {
     aspect-square 
     border-[1px]
     border-white
-    absolute z-0
+    absolute 
+    z-0
     opacity-10
     ${blockPosition}`;
 
