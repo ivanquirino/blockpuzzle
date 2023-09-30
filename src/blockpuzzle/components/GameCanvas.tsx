@@ -24,7 +24,7 @@ const createBlockDrawer = (
 
   return (color: string, x: number, y: number, w: number, h: number) => {
     ctx.beginPath();
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = "white";
     ctx.fillStyle = color;
     ctx.roundRect(x, y, w, h, 4);
     ctx.fill();
