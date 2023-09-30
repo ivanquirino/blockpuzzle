@@ -33,7 +33,7 @@ const SoundEffects = () => {
         audioContextRef.current.resume();
       }
       
-      if (state.status !== prevState.status && state.status === "gameover") {
+      if (state.settings.fx && state.status !== prevState.status && state.status === "gameover") {
         sounds.current.gameover.current?.play();
       }
 

@@ -234,7 +234,11 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
       canPause = false;
     },
     reset: () => {
-      set({ ...getInitialState(), status: "idle" });
+      set((state) => ({
+        ...getInitialState(),
+        status: "idle",
+        settings: { ...state.settings },
+      }));
     },
     ready: () => {
       set({ status: "idle" });
