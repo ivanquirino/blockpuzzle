@@ -125,8 +125,12 @@ const store: () => StateCreator<State & Actions> = () => (set, get) => {
 
       if (input.up) {
         tRotate();
+        return;
       }
-      if (input.down) tDrop();
+      if (input.down) {
+        tDrop();
+        return;
+      }
 
       tMove(input);
     },

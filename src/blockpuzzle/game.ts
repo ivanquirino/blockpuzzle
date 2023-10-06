@@ -419,27 +419,15 @@ export const moveCurrentPiece = (input: GameInput) => (state: State) => {
   const current = state.current;
   const grid = state.grid;
 
-  if (current) {
-    let next;
+  if (!current) return state;
 
-    if (input.left) {
-      next = moveLeft(current);
-    }
+  const next = input.left ? moveLeft(current) : moveRight(current);
 
-    if (input.right) {
-      next = moveRight(current);
-    }
-
-    if (next) {
-      const { blocks, left, right, down } = getCollisions(next, grid);
-
-      if (!blocks.length && !left.length && !right.length && !down.length) {
-        return { current: next };
-      }
-    }
+  if (isCollided(next, grid)) {
+    return state;
   }
 
-  return state;
+  return { current: next };
 };
 
 const moveUp = (piece: CurrentPiece, units: number) => {
