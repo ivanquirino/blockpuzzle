@@ -1,4 +1,4 @@
-FROM fedora:39 as dev
+FROM fedora:39 as deps
 
 RUN dnf install -y nodejs
 
@@ -8,6 +8,8 @@ ADD package.json .
 ADD package-lock.json .
 
 RUN npm ci
+
+FROM deps as dev
 
 ADD . .
 
@@ -19,4 +21,6 @@ FROM dev as build
 
 RUN npm run build
 
-ENTRYPOINT [ "bash" ]
+FROM nginx:alpine
+
+COPY --from=build /app/out/ /usr/share/nginx/html
