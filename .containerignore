@@ -1,0 +1,8 @@
+Containerfile
+build-container.sh
+run-container.sh
+.git
+.github
+.gitignore
+.containerignore
+.next

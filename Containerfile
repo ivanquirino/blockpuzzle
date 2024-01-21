@@ -4,8 +4,7 @@ RUN dnf install -y nodejs
 
 WORKDIR /app
 
-ADD package.json .
-ADD package-lock.json .
+ADD package.json package-lock.json ./
 
 RUN npm ci
 
