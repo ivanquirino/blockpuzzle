@@ -6,3 +6,4 @@ run-container.sh
 .gitignore
 .containerignore
 .next
+node_modules
