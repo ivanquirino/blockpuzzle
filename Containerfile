@@ -1,6 +1,6 @@
 FROM fedora:39 as deps
 
-RUN dnf install -y nodejs
+RUN dnf install -y nodejs git
 
 WORKDIR /app
 
