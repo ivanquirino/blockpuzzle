@@ -1,14 +1,14 @@
-FROM fedora:39 as deps
+FROM fedora:39 as dev
 
-RUN dnf install -y nodejs git
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y nodejs git
 
 WORKDIR /app
 
-ADD package.json package-lock.json ./
-
-RUN npm ci
-
-FROM deps as dev
+RUN --mount=source=package.json,target=package.json,z \
+    --mount=source=package-lock.json,target=package-lock.json,z \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --include-dev --verbose
 
 ADD . .
 
