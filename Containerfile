@@ -20,6 +20,6 @@ FROM dev as build
 
 RUN npm run build
 
-FROM nginx:alpine
+FROM nginx:alpine as prod
 
 COPY --from=build /app/out/ /usr/share/nginx/html

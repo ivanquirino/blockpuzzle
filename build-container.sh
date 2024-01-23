@@ -1,2 +1,2 @@
 #!/bin/bash
-podman build -f Containerfile -t blockpuzzle .
+podman build --target prod -f Containerfile -t blockpuzzle .
